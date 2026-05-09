@@ -54,18 +54,16 @@ const articleSchema = {
     keywords={tags}
 >
     <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
-    <header class="mb-5 sm:mb-10">
-        <h1
-            class="text-2xl sm:text-3xl font-bold text-[#586e75]"
-        >
+    <header data-layout="post-header">
+        <h1>
             {title}
         </h1>
 
-        <div class="mt-1.5 sm:mt-3 text-xs sm:text-sm">
-            <div class="flex items-center gap-1.5 text-[#93a1a1] flex-wrap">
+        <div data-layout="post-meta">
+            <div data-layout="post-dates">
                 {publishDate && !shouldShowBothDates && (
                     <>
-                        <time datetime={new Date(publishDate).toISOString()} class="italic">
+                        <time datetime={new Date(publishDate).toISOString()}>
                             {formatDate(publishDate)}
                         </time>
                     </>
@@ -74,7 +72,7 @@ const articleSchema = {
                 {publishDate && shouldShowBothDates && (
                     <>
                         <span>publicado:</span>
-                        <time datetime={new Date(publishDate).toISOString()} class="italic">
+                        <time datetime={new Date(publishDate).toISOString()}>
                             {formatDate(publishDate)}
                         </time>
                     </>
@@ -82,9 +80,9 @@ const articleSchema = {
 
                 {date && shouldShowBothDates && (
                     <>
-                        <span class="text-[#93a1a1]">|</span>
+                        <span>|</span>
                         <span>criado:</span>
-                        <time datetime={new Date(date).toISOString()} class="italic">
+                        <time datetime={new Date(date).toISOString()}>
                             {formatDate(date)}
                         </time>
                     </>
@@ -92,17 +90,10 @@ const articleSchema = {
             </div>
 
             {tags && tags.length > 0 && (
-                <div class="mt-1 flex gap-2 flex-wrap">
+                <div data-layout="post-tags">
                     {tags.map((tag: string) => (
-                        <a
-                            href={`/tags/${tag}`}
-                            class="
-                                text-[#586e75]
-                                hover:text-[#268bd2]
-                                hover:underline decoration-1 underline-offset-2
-                            "
-                        >
-                            #{tag}
+                        <a href={`/tags/${tag}`}>
+                            <span is-="badge" variant-="blue">#{tag}</span>
                         </a>
                     ))}
                 </div>
@@ -111,9 +102,9 @@ const articleSchema = {
     </header>
 
     {tldr && description && (
-        <section class="mb-8 sm:mb-10 -mt-2 sm:-mt-6">
-            <h2 class="text-sm text-[#93a1a1]">tldr;</h2>
-            <p class="mt-1 text-sm text-[#657b83]">
+        <section data-layout="post-summary">
+            <h2>tldr;</h2>
+            <p>
                 {description}
             </p>
         </section>

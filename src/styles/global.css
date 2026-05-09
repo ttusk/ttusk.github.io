@@ -1,74 +1,185 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+@layer base, utils, components;
 
-html {
-  font-family: var(--font-jetbrains-mono), monospace;
-  transition: background-color 0.2s, color 0.2s;
+@import "@webtui/plugin-nf";
+@import "@webtui/css/base.css";
+@import "@webtui/css/utils/box.css";
+@import "@webtui/css/components/typography.css";
+@import "@webtui/css/components/separator.css";
+@import "@webtui/css/components/badge.css";
+@import "@webtui/css/components/button.css";
+@import "./themes/solarized-light.css";
+
+@layer base {
+    :root {
+        --font-family:
+            var(--font-jetbrains-mono), Menlo, Monaco, monospace,
+            "Symbols Nerd Font";
+    }
 }
 
-body,
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
+@layer components {
+    html {
+        overflow-x: hidden;
+    }
 
-.prose,
-.prose :where(h1, h2, h3, h4, h5, h6, p, a, strong, em, li, blockquote, code, pre, time):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-  font-family: inherit;
-}
+    ::selection {
+        background-color: rgb(211 54 130 / 0.3);
+        color: inherit;
+    }
 
-/* Solarized light selection */
-::selection {
-  background-color: rgb(211 54 130 / 0.3); /* magenta #d33682 */
-  color: inherit;
-}
+    a[data-layout="post-list-item"][data-vim-active] {
+        background-color: var(--background1);
+    }
 
-.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
-.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
-  content: "" !important;
-}
+    body[data-layout="page"] {
+        max-width: 80ch;
+        margin: 0 auto;
+        padding: 1lh 2ch 2lh;
+        display: flex;
+        flex-direction: column;
+        gap: 1lh;
+    }
 
-.prose :where(code):not(:where(pre *, [class~="not-prose"], [class~="not-prose"] *)) {
-  color: #b58900; /* solarized yellow */
-}
+    main[data-layout="main"] {
+        width: 100%;
+    }
 
+    article[data-layout="article"] {
+        display: flex;
+        flex-direction: column;
+        gap: 1lh;
+        min-width: 0;
+    }
 
-.prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-  padding-right: 2rem;
-  padding-top: 0.0625rem;
-  padding-bottom: 0.0625rem;
-  quotes: none;
-}
+    article[data-layout="article"] :is(p, li, blockquote) {
+        text-align: justify;
+        text-justify: inter-word;
+        hyphens: auto;
+        line-height: 1.6;
+    }
 
-@media (max-width: 640px) {
-  .prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    padding-right: 1rem;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-}
+    header[data-layout="site-header"] {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1ch;
+        min-width: 0;
+        margin-bottom: 1lh;
+    }
 
-.prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
-.prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
-  content: none !important;
-}
+    footer[data-layout="site-footer"] {
+        width: 100%;
+    }
 
-/* ═══ Type signature utility ═══ */
-.type-sig {
-  font-style: italic;
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-}
+    [data-layout="footer-row"] {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 1ch;
+        flex-wrap: wrap;
+    }
 
-@layer utilities {
-  .animate-blink {
-    animation: blink 1s step-end infinite;
-  }
-}
+    [data-layout="footer-links"],
+    [data-layout="header-links"],
+    [data-layout="post-tags"],
+    [data-layout="post-list-meta"] {
+        display: flex;
+        gap: 1ch;
+        flex-wrap: wrap;
+        align-items: center;
+    }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+    [data-layout="post-header"],
+    [data-layout="post-index"],
+    [data-layout="post-summary"] {
+        display: flex;
+        flex-direction: column;
+        gap: 1lh;
+    }
+
+    [data-layout="post-meta"] {
+        display: flex;
+        flex-direction: column;
+        gap: 1lh;
+    }
+
+    [data-layout="post-dates"] {
+        display: flex;
+        gap: 1ch;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    [data-layout="post-list"] {
+        display: flex;
+        flex-direction: column;
+        gap: 1lh;
+    }
+
+    a[data-layout="post-list-item"] {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 0.5lh 2ch;
+        align-items: start;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    [data-layout="post-date"] {
+        white-space: nowrap;
+    }
+
+    [data-layout="post-title"] {
+        min-width: 0;
+        text-decoration: underline;
+        text-underline-offset: 0.2lh;
+    }
+
+    [data-layout="post-list-meta"] {
+        grid-column: 2;
+    }
+
+    [data-layout="post-draft"] {
+        grid-column: 3;
+        justify-self: end;
+    }
+
+    [data-layout="empty-state"] {
+        display: flex;
+        flex-direction: column;
+        gap: 1lh;
+        align-items: flex-start;
+    }
+
+    img,
+    svg,
+    video,
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    @media (max-width: 640px) {
+        body[data-layout="page"] {
+            padding-inline: 1ch;
+        }
+
+        a[data-layout="post-list-item"] {
+            grid-template-columns: 1fr;
+            gap: 0.5lh;
+        }
+
+        [data-layout="post-list-meta"] {
+            grid-column: 1;
+        }
+
+        [data-layout="post-draft"] {
+            grid-column: 1;
+            justify-self: start;
+        }
+
+        [data-layout="footer-row"] {
+            align-items: flex-start;
+        }
+    }
 }

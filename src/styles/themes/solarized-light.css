@@ -1,0 +1,180 @@
+@layer base {
+    [data-webtui-theme="solarized-light"] {
+        --sol-base3: #fdf6e3;
+        --sol-base2: #eee8d5;
+        --sol-base1: #93a1a1;
+        --sol-base0: #839496;
+        --sol-base00: #657b83;
+        --sol-base01: #586e75;
+        --sol-base02: #073642;
+        --sol-base03: #002b36;
+
+        --yellow: #b58900;
+        --orange: #cb4b16;
+        --red: #dc322f;
+        --magenta: #d33682;
+        --violet: #6c71c4;
+        --blue: #268bd2;
+        --cyan: #2aa198;
+        --green: #859900;
+
+        --background0: var(--sol-base3);
+        --background1: var(--sol-base2);
+        --background2: var(--sol-base1);
+        --background3: var(--sol-base0);
+
+        --foreground0: var(--sol-base01);
+        --foreground1: var(--sol-base00);
+        --foreground2: var(--sol-base0);
+
+        --box-border-color: var(--foreground2);
+        --table-border-color: var(--foreground2);
+        --separator-color: var(--foreground2);
+    }
+}
+
+@layer components {
+    [data-webtui-theme="solarized-light"] :is(h1, h2, h3, h4, h5, h6) {
+        color: var(--green);
+    }
+
+    [data-webtui-theme="solarized-light"]
+        :is(p, blockquote, li, [is-~="typography-block"])
+        a {
+        color: var(--blue);
+    }
+
+    [data-webtui-theme="solarized-light"]
+        :is(p, blockquote, li, [is-~="typography-block"])
+        code {
+        color: var(--yellow);
+    }
+
+    [data-webtui-theme="solarized-light"] :is(
+            button,
+            input[type="button"],
+            input[type="submit"],
+            input[type="reset"],
+            [is-~="button"]
+        )[variant-="yellow"] {
+        --button-primary: var(--yellow);
+        --button-secondary: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] :is(
+            button,
+            input[type="button"],
+            input[type="submit"],
+            input[type="reset"],
+            [is-~="button"]
+        )[variant-="orange"] {
+        --button-primary: var(--orange);
+        --button-secondary: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] :is(
+            button,
+            input[type="button"],
+            input[type="submit"],
+            input[type="reset"],
+            [is-~="button"]
+        )[variant-="red"] {
+        --button-primary: var(--red);
+        --button-secondary: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] :is(
+            button,
+            input[type="button"],
+            input[type="submit"],
+            input[type="reset"],
+            [is-~="button"]
+        )[variant-="magenta"] {
+        --button-primary: var(--magenta);
+        --button-secondary: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] :is(
+            button,
+            input[type="button"],
+            input[type="submit"],
+            input[type="reset"],
+            [is-~="button"]
+        )[variant-="violet"] {
+        --button-primary: var(--violet);
+        --button-secondary: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] :is(
+            button,
+            input[type="button"],
+            input[type="submit"],
+            input[type="reset"],
+            [is-~="button"]
+        )[variant-="blue"] {
+        --button-primary: var(--blue);
+        --button-secondary: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] :is(
+            button,
+            input[type="button"],
+            input[type="submit"],
+            input[type="reset"],
+            [is-~="button"]
+        )[variant-="cyan"] {
+        --button-primary: var(--cyan);
+        --button-secondary: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] :is(
+            button,
+            input[type="button"],
+            input[type="submit"],
+            input[type="reset"],
+            [is-~="button"]
+        )[variant-="green"] {
+        --button-primary: var(--green);
+        --button-secondary: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] [is-~="badge"][variant-="yellow"] {
+        --badge-color: var(--yellow);
+        --badge-text: var(--foreground0);
+    }
+
+    [data-webtui-theme="solarized-light"] [is-~="badge"][variant-="orange"] {
+        --badge-color: var(--orange);
+        --badge-text: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] [is-~="badge"][variant-="red"] {
+        --badge-color: var(--red);
+        --badge-text: var(--foreground0);
+    }
+
+    [data-webtui-theme="solarized-light"] [is-~="badge"][variant-="magenta"] {
+        --badge-color: var(--magenta);
+        --badge-text: var(--foreground0);
+    }
+
+    [data-webtui-theme="solarized-light"] [is-~="badge"][variant-="violet"] {
+        --badge-color: var(--violet);
+        --badge-text: var(--foreground0);
+    }
+
+    [data-webtui-theme="solarized-light"] [is-~="badge"][variant-="blue"] {
+        --badge-color: var(--blue);
+        --badge-text: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] [is-~="badge"][variant-="cyan"] {
+        --badge-color: var(--cyan);
+        --badge-text: var(--background0);
+    }
+
+    [data-webtui-theme="solarized-light"] [is-~="badge"][variant-="green"] {
+        --badge-color: var(--green);
+        --badge-text: var(--background0);
+    }
+}

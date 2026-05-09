@@ -33,40 +33,47 @@ const { posts } = Astro.props;
 ---
 
 <BaseLayout title={`Tag: #${tag}`} description={`Posts marcados com ${tag}`}>
-    <section class="mt-4 sm:mt-8">
-        <h2 class="not-prose text-lg sm:text-xl mb-6 text-[#586e75]">
+    <section data-layout="post-index">
+        <h2>
             <span></span> # {tag}
         </h2>
 
         {posts.length === 0 ? (
-            <div class="not-prose text-center py-12 text-[#93a1a1]">
-                <span class="text-2xl block mb-2">(；・∀・)</span>
-                <span class="text-sm">nenhum post com essa tag...</span>
+            <div data-layout="empty-state">
+                <span>(；・∀・)</span>
+                <span>nenhum post com essa tag...</span>
             </div>
         ) : (
-        <div class="not-prose flex flex-col gap-3 text-xs sm:text-sm">
+        <div data-layout="post-list">
             {posts.map((post) => (
                 <a
                     href={`/${post.id}/`}
-                    class="group flex items-baseline gap-2 min-w-0 [text-decoration:none] hover:[text-decoration:none]"
+                    data-layout="post-list-item"
+                    data-vim-nav
+                    tabindex="0"
                 >
-                    <time
-                        datetime={post.data.publishDate.toISOString()}
-                        class="text-[#93a1a1] whitespace-nowrap shrink-0 tabular-nums"
-                    >
+                    <time datetime={post.data.publishDate.toISOString()} data-layout="post-date">
                         {formatDate(post.data.publishDate)}
                     </time>
-                    <span class="min-w-0 truncate text-[#657b83] group-hover:text-[#586e75]">
+                    <span data-layout="post-title">
                         {post.data.title}
                     </span>
-                    {post.data.tags && post.data.tags.length > 0 && (
-                        <span class="shrink-0 text-[0.9em] text-[#93a1a1] group-hover:text-[#268bd2]">
-                            {post.data.tags.map((tag) => `#${tag}`).join(" ")}
+                    {post.data.draft && (
+                        <span data-layout="post-draft">
+                            <span is-="badge" variant-="orange">rascunho</span>
                         </span>
                     )}
-                    {post.data.draft && (
-                        <span class="text-[#cb4b16] shrink-0">[rascunho]</span>
-                    )}
+                    {post.data.tags && post.data.tags.length > 0 ? (
+                        <span data-layout="post-list-meta">
+                            {post.data.tags && post.data.tags.length > 0 && (
+                                <span data-layout="post-tags">
+                                    {post.data.tags.map((tag) => (
+                                        <span is-="badge" variant-="cyan">#{tag}</span>
+                                    ))}
+                                </span>
+                            )}
+                        </span>
+                    ) : null}
                 </a>
             ))}
         </div>

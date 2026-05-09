@@ -9,6 +9,8 @@
         "@astrojs/ts-plugin": "^1.10.7",
         "@lucide/astro": "^0.563.0",
         "@tailwindcss/vite": "^4.1.18",
+        "@webtui/css": "^0.1.7",
+        "@webtui/plugin-nf": "^0.1.2",
         "astro": "^6.2.2",
         "astro-expressive-code": "^0.41.6",
         "class-variance-authority": "^0.7.1",
@@ -539,6 +541,10 @@
     "@volar/source-map": ["@volar/source-map@2.4.28", "", {}, "sha512-yX2BDBqJkRXfKw8my8VarTyjv48QwxdJtvRgUpNE5erCsgEUdI2DsLbpa+rOQVAJYshY99szEcRDmyHbF10ggQ=="],
 
     "@volar/typescript": ["@volar/typescript@2.4.28", "", { "dependencies": { "@volar/language-core": "2.4.28", "path-browserify": "^1.0.1", "vscode-uri": "^3.0.8" } }, "sha512-Ja6yvWrbis2QtN4ClAKreeUZPVYMARDYZl9LMEv1iQ1QdepB6wn0jTRxA9MftYmYa4DQ4k/DaSZpFPUfxl8giw=="],
+
+    "@webtui/css": ["@webtui/css@0.1.7", "", {}, "sha512-iPK/gRM0EPBSa1tyJINm2pRPuKoT1GryN0Qljar+gDaKHJPNExKvOmnVKk91JpsTUb8qXZd+ggSJJjns1fXLNg=="],
+
+    "@webtui/plugin-nf": ["@webtui/plugin-nf@0.1.2", "", {}, "sha512-jLvg6ay1T6oXgaVR2qqBUNFIRxgajY0CruGfYww9d1a7myDnCbkKgUjKlOD7NDnrlQhTvl/ul0J45AUHNC3UDg=="],
 
     "accepts": ["accepts@2.0.0", "", { "dependencies": { "mime-types": "^3.0.0", "negotiator": "^1.0.0" } }, "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng=="],
 

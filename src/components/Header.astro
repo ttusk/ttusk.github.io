@@ -1,11 +1,29 @@
-<header
-    class="flex justify-between items-center mt-3 sm:mt-4 mb-1 w-full min-w-0 gap-4"
->
-    <a
-        href="/"
-        class="flex-shrink-0 select-none text-sm sm:text-base text-[#586e75] hover:text-[#268bd2] transition-colors"
-        title="Home"
-    >
+<header data-layout="site-header">
+    <a href="/" title="Home" is-="button" variant-="green" size-="small">
         talkinghead
     </a>
+    <div data-layout="header-links">
+        <a
+            href="https://github.com/ttusk"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="GitHub"
+            is-="button"
+            variant-="blue"
+            size-="small"
+        >
+            github
+        </a>
+        <a
+            href="/rss.xml"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="RSS Feed"
+            is-="button"
+            variant-="cyan"
+            size-="small"
+        >
+            rss
+        </a>
+    </div>
 </header>

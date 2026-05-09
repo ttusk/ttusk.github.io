@@ -1,15 +1,13 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
-import tailwindcss from '@tailwindcss/vite';
 // import icon from "astro-icon";
 import expressiveCode from 'astro-expressive-code';
 
+const fontStack =
+  'var(--font-jetbrains-mono), Menlo, Monaco, monospace, "Symbols Nerd Font"'
+
 // https://astro.build/config
 export default defineConfig({
-  vite: {
-    plugins: [tailwindcss()],
-  },
-
   fonts: [{
     provider: fontProviders.local(),
     name: "JetBrains Mono",
@@ -40,16 +38,19 @@ export default defineConfig({
       ],
     },
   }],
-
   integrations: [expressiveCode({
     themes: ['solarized-light'],
     styleOverrides: {
-      // codeFontFamily: 'Maple Mono NF CN',
       borderRadius: '0',
+      borderWidth: '0',
+      codeBackground: 'var(--background1)',
+      codeFontFamily: fontStack,
+      uiFontFamily: fontStack,
       frames: {
         shadowColor: 'transparent',
+        frameBoxShadowCssValue: 'none',
       },
-    }
+    },
   })],
 
   site: "https://talkinghead.blog.br",
