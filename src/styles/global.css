@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+html {
+  font-family: var(--font-jetbrains-mono), monospace;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.prose,
+.prose :where(h1, h2, h3, h4, h5, h6, p, a, strong, em, li, blockquote, code, pre, time):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  font-family: inherit;
+}
+
+/* Solarized light selection */
+::selection {
+  background-color: rgb(211 54 130 / 0.3); /* magenta #d33682 */
+  color: inherit;
+}
+
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+  content: "" !important;
+}
+
+.prose :where(code):not(:where(pre *, [class~="not-prose"], [class~="not-prose"] *)) {
+  color: #b58900; /* solarized yellow */
+}
+
+
+.prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  padding-right: 2rem;
+  padding-top: 0.0625rem;
+  padding-bottom: 0.0625rem;
+  quotes: none;
+}
+
+@media (max-width: 640px) {
+  .prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    padding-right: 1rem;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+  content: none !important;
+}
+
+/* ═══ Type signature utility ═══ */
+.type-sig {
+  font-style: italic;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+@layer utilities {
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
