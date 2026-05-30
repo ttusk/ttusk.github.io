@@ -180,9 +180,18 @@
         @apply overflow-x-auto p-4;
     }
 
+    .post-content figure {
+        @apply my-6;
+    }
+
     .post-content img {
         border: 1.5px solid #f8e0a0;
         box-shadow: 0.1rem 0.1rem 0.2rem #00000028;
+    }
+
+    .post-content figcaption {
+        color: var(--solarized-base1);
+        @apply mt-2 text-center text-sm;
     }
 
     .post-content table {
