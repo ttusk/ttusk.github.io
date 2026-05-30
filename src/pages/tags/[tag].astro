@@ -46,7 +46,7 @@ const tagClass = (index: number) => `tag-link-${index % 6}`;
         ) : (
             <ul class="space-y-5">
                 {posts.map((post) => (
-                    <li class="surface-divider border-b pb-4 last:border-b-0">
+                    <li>
                         <div>
                             <div class="meta-line">
                                 <span>{formatDate(post.data.publishDate)}</span>
