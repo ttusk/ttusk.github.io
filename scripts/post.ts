@@ -9,7 +9,7 @@ const cli = cac("post");
 
 cli.option("--title <title>", "Post title");
 cli.option("--description <description>", "Post description");
-cli.option("--draft", "Mark as draft", { default: false });
+cli.option("--draft", "Mark as draft", { default: true });
 cli.option("--tldr", "Set TL;DR flag", { default: false });
 cli.option("--tags <tags>", "Comma-separated tags");
 cli.help();
