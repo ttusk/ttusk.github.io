@@ -7,60 +7,52 @@ const formatDate = (date: Date) =>
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
-    }).replace(/\//g, "-");
+    });
 
 const posts = (await getCollection("posts", ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true;
 })).sort(
     (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
 );
+const tagClass = (index: number) => `tag-link-${index % 6}`;
 ---
 
 <BaseLayout title="blog" description="meu pedacinho de história na internet">
-    <section data-layout="post-index">
-        <div data-layout="index-intro">
+    <section class="w-full">
+        <div class="mb-8">
             <slot />
         </div>
 
         {posts.length === 0 ? (
-            <div data-layout="empty-state">
-                <span>(´・ω・`)</span>
-                <span>nenhum post ainda...</span>
+            <div>
+                nenhum post ainda.
             </div>
         ) : (
-        <div data-layout="post-list">
-            {posts.map((post) => (
-                <a
-                    href={`/${post.id}/`}
-                    data-layout="post-list-item"
-                    data-vim-nav
-                    tabindex="0"
-                >
-                    <time datetime={post.data.publishDate.toISOString()} data-layout="post-date">
-                        {formatDate(post.data.publishDate)}
-                    </time>
-                    <span data-layout="post-title">
-                        {post.data.title}
-                    </span>
-                    {post.data.draft && (
-                        <span data-layout="post-draft">
-                            <span is-="badge" variant-="orange">rascunho</span>
-                        </span>
-                    )}
-                    {post.data.tags && post.data.tags.length > 0 ? (
-                        <span data-layout="post-list-meta">
-                            {post.data.tags && post.data.tags.length > 0 && (
-                                <span data-layout="post-tags">
-                                    {post.data.tags.map((tag) => (
-                                        <span is-="badge" variant-="cyan">#{tag}</span>
-                                    ))}
-                                </span>
-                            )}
-                        </span>
-                    ) : null}
-                </a>
-            ))}
-        </div>
+            <ul class="space-y-5">
+                {posts.map((post) => (
+                    <li class="surface-divider border-b pb-4 last:border-b-0">
+                        <div>
+                            <div class="meta-line">
+                                <span>{formatDate(post.data.publishDate)}</span>
+                                {post.data.tags && post.data.tags.length > 0 ? (
+                                    <>
+                                        <span class="meta-dot">•</span>
+                                        <div class="flex flex-wrap gap-x-2">
+                                            {post.data.tags.map((tag, index) => (
+                                                <a href={`/tags/${tag}/`} class={tagClass(index)}>#{tag}</a>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : null}
+                            </div>
+                            <a href={`/${post.id}/`} class="post-title-link">
+                                {post.data.draft && <span class="draft-note">[rascunho] </span>}
+                                {post.data.title}
+                            </a>
+                        </div>
+                    </li>
+                ))}
+            </ul>
         )}
     </section>
 </BaseLayout>

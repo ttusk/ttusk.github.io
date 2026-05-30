@@ -6,19 +6,9 @@ import BaseLayout from "@layouts/BaseLayout.astro";
     title="404 - Página não encontrada"
     description="Esta página não existe."
 >
-    <div data-layout="empty-state">
-
-        <div>
-            <div>404</div>
-            <span>σ(￣、￣〃)</span>
-        </div>
-
-        <p>
-            Essa página infelizmente não existe...
-        </p>
-
-        <a href="/" is-="button" variant-="blue" size-="small">
-            voltar
-        </a>
-    </div>
+    <section class="w-full">
+        <h1>404</h1>
+        <p>Essa página infelizmente não existe.</p>
+        <p><a href="/">voltar</a></p>
+    </section>
 </BaseLayout>

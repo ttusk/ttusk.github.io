@@ -1,185 +1,197 @@
-@layer base, utils, components;
-
-@import "@webtui/plugin-nf";
-@import "@webtui/css/base.css";
-@import "@webtui/css/utils/box.css";
-@import "@webtui/css/components/typography.css";
-@import "@webtui/css/components/separator.css";
-@import "@webtui/css/components/badge.css";
-@import "@webtui/css/components/button.css";
-@import "./themes/solarized-light.css";
+@import "tailwindcss";
 
 @layer base {
     :root {
-        --font-family:
-            var(--font-jetbrains-mono), Menlo, Monaco, monospace,
-            "Symbols Nerd Font";
+        --solarized-base03: #002b36;
+        --solarized-base02: #073642;
+        --solarized-base01: #586e75;
+        --solarized-base00: #657b83;
+        --solarized-base0: #839496;
+        --solarized-base1: #93a1a1;
+        --solarized-base2: #eee8d5;
+        --solarized-base3: #fdf6e3;
+        --solarized-yellow: #b58900;
+        --solarized-orange: #cb4b16;
+        --solarized-red: #dc322f;
+        --solarized-magenta: #d33682;
+        --solarized-violet: #6c71c4;
+        --solarized-blue: #268bd2;
+        --solarized-cyan: #2aa198;
+        --solarized-green: #859900;
     }
-}
 
-@layer components {
     html {
-        overflow-x: hidden;
+        @apply scroll-smooth;
+    }
+
+    body {
+        background-color: var(--solarized-base3);
+        color: var(--solarized-base00);
+        @apply min-h-screen;
     }
 
     ::selection {
-        background-color: rgb(211 54 130 / 0.3);
-        color: inherit;
+        background-color: color-mix(in srgb, var(--solarized-magenta) 22%, transparent);
+        color: var(--solarized-base03);
     }
 
-    a[data-layout="post-list-item"][data-vim-active] {
-        background-color: var(--background1);
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: var(--solarized-base01);
     }
 
-    body[data-layout="page"] {
-        max-width: 80ch;
-        margin: 0 auto;
-        padding: 1lh 2ch 2lh;
-        display: flex;
-        flex-direction: column;
-        gap: 1lh;
+    h1 {
+        @apply text-3xl leading-tight;
     }
 
-    main[data-layout="main"] {
-        width: 100%;
+    h2 {
+        @apply text-2xl leading-tight;
     }
 
-    article[data-layout="article"] {
-        display: flex;
-        flex-direction: column;
-        gap: 1lh;
-        min-width: 0;
+    h3 {
+        @apply text-xl leading-tight;
     }
 
-    article[data-layout="article"] :is(p, li, blockquote) {
-        text-align: justify;
-        text-justify: inter-word;
-        hyphens: auto;
-        line-height: 1.6;
+    a {
+        color: var(--solarized-blue);
     }
 
-    header[data-layout="site-header"] {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1ch;
-        min-width: 0;
-        margin-bottom: 1lh;
+    a:hover {
+        @apply underline;
     }
 
-    footer[data-layout="site-footer"] {
-        width: 100%;
+    hr {
+        border-color: var(--solarized-base2);
     }
 
-    [data-layout="footer-row"] {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 1ch;
-        flex-wrap: wrap;
-    }
-
-    [data-layout="footer-links"],
-    [data-layout="header-links"],
-    [data-layout="post-tags"],
-    [data-layout="post-list-meta"] {
-        display: flex;
-        gap: 1ch;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    [data-layout="post-header"],
-    [data-layout="post-index"],
-    [data-layout="post-summary"] {
-        display: flex;
-        flex-direction: column;
-        gap: 1lh;
-    }
-
-    [data-layout="post-meta"] {
-        display: flex;
-        flex-direction: column;
-        gap: 1lh;
-    }
-
-    [data-layout="post-dates"] {
-        display: flex;
-        gap: 1ch;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    [data-layout="post-list"] {
-        display: flex;
-        flex-direction: column;
-        gap: 1lh;
-    }
-
-    a[data-layout="post-list-item"] {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        gap: 0.5lh 2ch;
-        align-items: start;
-        text-decoration: none;
-        color: inherit;
-    }
-
-    [data-layout="post-date"] {
-        white-space: nowrap;
-    }
-
-    [data-layout="post-title"] {
-        min-width: 0;
-        text-decoration: underline;
-        text-underline-offset: 0.2lh;
-    }
-
-    [data-layout="post-list-meta"] {
-        grid-column: 2;
-    }
-
-    [data-layout="post-draft"] {
-        grid-column: 3;
-        justify-self: end;
-    }
-
-    [data-layout="empty-state"] {
-        display: flex;
-        flex-direction: column;
-        gap: 1lh;
-        align-items: flex-start;
+    code,
+    pre {
+        color: var(--solarized-base01);
+        font-family: Monaco, Consolas, "Lucida Console", monospace;
     }
 
     img,
     svg,
     video,
     canvas {
-        max-width: 100%;
-        height: auto;
+        @apply h-auto max-w-full;
+    }
+}
+
+@layer components {
+    .surface-divider {
+        border-color: var(--solarized-base2);
     }
 
-    @media (max-width: 640px) {
-        body[data-layout="page"] {
-            padding-inline: 1ch;
-        }
+    .muted {
+        color: var(--solarized-base1);
+    }
 
-        a[data-layout="post-list-item"] {
-            grid-template-columns: 1fr;
-            gap: 0.5lh;
-        }
+    .meta-line {
+        color: var(--solarized-base1);
+        @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-sm;
+    }
 
-        [data-layout="post-list-meta"] {
-            grid-column: 1;
-        }
+    .meta-dot {
+        color: var(--solarized-base0);
+    }
 
-        [data-layout="post-draft"] {
-            grid-column: 1;
-            justify-self: start;
-        }
+    .post-title-link {
+        color: var(--solarized-base01);
+        @apply text-lg;
+    }
 
-        [data-layout="footer-row"] {
-            align-items: flex-start;
-        }
+    .draft-note {
+        color: var(--solarized-orange);
+    }
+
+    .tag-link-0 {
+        color: var(--solarized-blue);
+    }
+
+    .tag-link-1 {
+        color: var(--solarized-cyan);
+    }
+
+    .tag-link-2 {
+        color: var(--solarized-green);
+    }
+
+    .tag-link-3 {
+        color: var(--solarized-violet);
+    }
+
+    .tag-link-4 {
+        color: var(--solarized-yellow);
+    }
+
+    .tag-link-5 {
+        color: var(--solarized-magenta);
+    }
+
+    .post-content > * + * {
+        @apply mt-4;
+    }
+
+    .post-content p,
+    .post-content li,
+    .post-content blockquote {
+        @apply leading-7;
+    }
+
+    .post-content ul,
+    .post-content ol {
+        @apply pl-6;
+    }
+
+    .post-content ul {
+        @apply list-disc;
+    }
+
+    .post-content ol {
+        @apply list-decimal;
+    }
+
+    .post-content li + li {
+        @apply mt-1;
+    }
+
+    .post-content blockquote {
+        background-color: color-mix(in srgb, var(--solarized-base2) 70%, var(--solarized-base3));
+        border-left: 4px solid color-mix(in srgb, var(--solarized-base01) 22%, var(--solarized-base2));
+        color: var(--solarized-base01);
+        @apply rounded-r px-4 py-3 italic;
+    }
+
+    .post-content pre,
+    .post-content :not(pre) > code {
+        background-color: var(--solarized-base2);
+    }
+
+    .post-content :not(pre) > code {
+        @apply rounded px-1.5 py-0.5;
+    }
+
+    .post-content pre {
+        @apply overflow-x-auto p-4;
+    }
+
+    .post-content img {
+        border: 1.5px solid #f8e0a0;
+        box-shadow: 0.1rem 0.1rem 0.2rem #00000028;
+    }
+
+    .post-content table {
+        @apply w-full border-collapse;
+    }
+
+    .post-content th,
+    .post-content td {
+        border: 1px solid var(--solarized-base2);
+        @apply px-3 py-2 text-left;
     }
 }

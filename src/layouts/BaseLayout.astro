@@ -1,5 +1,4 @@
 ---
-import { Font } from "astro:assets";
 import "../styles/global.css";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
@@ -21,11 +20,10 @@ const keywordContent = Array.isArray(keywords) ? keywords.join(", ") : keywords;
 ---
 
 <!doctype html>
-<html lang="pt-BR" data-webtui-theme="solarized-light">
+<html lang="pt-BR">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <Font cssVariable="--font-jetbrains-mono" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <title>{pageTitle}</title>
         <meta name="description" content={description} />
@@ -50,13 +48,10 @@ const keywordContent = Array.isArray(keywords) ? keywords.join(", ") : keywords;
             <meta property="article:modified_time" content={modifiedTime} />
         )}
     </head>
-    <body data-layout="page">
+    <body>
         <Header />
-
-        <main data-layout="main">
-            <article data-layout="article">
-                <slot />
-            </article>
+        <main class="mx-auto w-full max-w-3xl px-4 py-6">
+            <slot />
         </main>
 
         <Footer />
@@ -66,92 +61,5 @@ const keywordContent = Array.isArray(keywords) ? keywords.join(", ") : keywords;
             async
             src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
         ></script>
-        <script>
-            const vimSelector = '[data-vim-nav], a[href], button, summary, [tabindex]:not([tabindex="-1"])';
-            const vimContentSelector = [
-                'header[data-layout="site-header"]',
-                'footer [data-layout="footer-meta"]',
-                '[data-layout="post-index"] > h2',
-                '[data-layout="post-dates"] span',
-                '[data-layout="post-dates"] time',
-                '[data-layout="empty-state"] span',
-                'article h1',
-                'article h2',
-                'article h3',
-                'article h4',
-                'article h5',
-                'article h6',
-                'article p',
-                'article li',
-                'article blockquote',
-                'article pre',
-                'article img',
-                'article table',
-                'article hr',
-            ].join(', ');
-
-            function isUserTyping() {
-                return (
-                    document.activeElement &&
-                    (/input|textarea|select/i.test(document.activeElement.tagName) ||
-                        document.activeElement.hasAttribute('contenteditable'))
-                );
-            }
-
-            function clearVimActiveState() {
-                for (const element of document.querySelectorAll('[data-vim-active]')) {
-                    element.removeAttribute('data-vim-active');
-                }
-            }
-
-            function vimFocusElement(element) {
-                element.focus();
-                element.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-                clearVimActiveState();
-                element.setAttribute('data-vim-active', '');
-            }
-
-            function prepareVimContentTargets() {
-                const targets = document.querySelectorAll(vimContentSelector);
-
-                for (const element of targets) {
-                    if (!(element instanceof HTMLElement)) continue;
-                    if (element.closest('a, button, summary, pre code, [is-~="badge"], [is-~="button"]')) continue;
-                    if (element.matches('[tabindex], a[href], button, summary, [is-~="badge"], [is-~="button"]')) continue;
-
-                    element.setAttribute('tabindex', '0');
-                    element.setAttribute('data-vim-nav', '');
-                }
-            }
-
-            prepareVimContentTargets();
-
-            document.addEventListener('focusin', (event) => {
-                const target = event.target instanceof HTMLElement
-                    ? event.target.closest(vimSelector)
-                    : null;
-
-                if (!target) {
-                    clearVimActiveState();
-                    return;
-                }
-
-                clearVimActiveState();
-                target.setAttribute('data-vim-active', '');
-            });
-
-            document.addEventListener('click', (event) => {
-                const target = event.target instanceof HTMLElement
-                    ? event.target.closest(vimSelector)
-                    : null;
-
-                if (!target) {
-                    clearVimActiveState();
-                    return;
-                }
-
-                vimFocusElement(target);
-            });
-        </script>
     </body>
 </html>

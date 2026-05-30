@@ -11,12 +11,13 @@ const formatDate = (value: Date | string) =>
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
-    }).replace(/\//g, "-");
+    });
 const shouldShowBothDates = Boolean(
     date &&
     publishDate &&
     new Date(date).getTime() !== new Date(publishDate).getTime(),
 );
+const tagClass = (index: number) => `tag-link-${index % 6}`;
 const postUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const articleSchema = {
     "@context": "https://schema.org",
@@ -54,19 +55,15 @@ const articleSchema = {
     keywords={tags}
 >
     <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
-    <header data-layout="post-header">
-        <h1>
-            {title}
-        </h1>
+    <article class="w-full">
+        <header class="mb-8">
+            <h1>{title}</h1>
 
-        <div data-layout="post-meta">
-            <div data-layout="post-dates">
+            <div class="meta-line mt-3">
                 {publishDate && !shouldShowBothDates && (
-                    <>
-                        <time datetime={new Date(publishDate).toISOString()}>
-                            {formatDate(publishDate)}
-                        </time>
-                    </>
+                    <time datetime={new Date(publishDate).toISOString()}>
+                        {formatDate(publishDate)}
+                    </time>
                 )}
 
                 {publishDate && shouldShowBothDates && (
@@ -80,35 +77,38 @@ const articleSchema = {
 
                 {date && shouldShowBothDates && (
                     <>
-                        <span>|</span>
+                        <span>/</span>
                         <span>criado:</span>
                         <time datetime={new Date(date).toISOString()}>
                             {formatDate(date)}
                         </time>
                     </>
                 )}
+
+                {tags && tags.length > 0 && (
+                    <>
+                        <span class="meta-dot">•</span>
+                        <div class="flex flex-wrap gap-2">
+                            {tags.map((tag: string, index: number) => (
+                                <a href={`/tags/${tag}`} class={tagClass(index)}>#{tag}</a>
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
+        </header>
 
-            {tags && tags.length > 0 && (
-                <div data-layout="post-tags">
-                    {tags.map((tag: string) => (
-                        <a href={`/tags/${tag}`}>
-                            <span is-="badge" variant-="blue">#{tag}</span>
-                        </a>
-                    ))}
-                </div>
-            )}
+        {tldr && description && (
+            <section class="mb-8">
+                <h2>tl;dr</h2>
+                <p class="mt-2">
+                    {description}
+                </p>
+            </section>
+        )}
+
+        <div class="post-content">
+            <slot />
         </div>
-    </header>
-
-    {tldr && description && (
-        <section data-layout="post-summary">
-            <h2>tldr;</h2>
-            <p>
-                {description}
-            </p>
-        </section>
-    )}
-
-    <slot />
+    </article>
 </BaseLayout>
