@@ -2,6 +2,7 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
+const { frontmatter = {} } = Astro.props;
 const formatDate = (date: Date) =>
     date.toLocaleDateString("pt-BR", {
         day: "2-digit",
@@ -15,9 +16,11 @@ const posts = (await getCollection("posts", ({ data }) => {
     (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
 );
 const tagClass = (index: number) => `tag-link-${index % 6}`;
+const seoTitle = frontmatter.title ?? "blog";
+const seoDescription = frontmatter.description ?? "meu pedacinho de história na internet";
 ---
 
-<BaseLayout title="blog" description="meu pedacinho de história na internet">
+<BaseLayout title={seoTitle} description={seoDescription}>
     <section class="w-full">
         <div class="mb-8">
             <slot />

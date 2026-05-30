@@ -15,7 +15,7 @@ const {
 
 const siteName = "talkinghead";
 const canonicalUrl = new URL(canonical, Astro.site);
-const pageTitle = title ? `${title} | ${siteName}` : siteName;
+const pageTitle = title ? `${siteName} - ${title}` : siteName;
 const keywordContent = Array.isArray(keywords) ? keywords.join(", ") : keywords;
 ---
 
