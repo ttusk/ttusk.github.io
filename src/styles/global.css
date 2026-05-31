@@ -87,6 +87,16 @@
         border-color: var(--solarized-base2);
     }
 
+    .code-frame-surface {
+        --frame-border-color: color-mix(in srgb, var(--solarized-base01) 12%, var(--solarized-base2));
+        border-color: var(--frame-border-color);
+        box-shadow: 0.1rem 0.1rem 0.2rem color-mix(in srgb, var(--frame-border-color) 75%, transparent);
+    }
+
+    .code-frame-surface > [role="tablist"] {
+        border-color: var(--frame-border-color);
+    }
+
     .muted {
         color: var(--solarized-base1);
     }
@@ -107,6 +117,26 @@
 
     .draft-note {
         color: var(--solarized-orange);
+    }
+
+    .experience-tab {
+        background-color: transparent;
+        border-color: var(--frame-border-color, color-mix(in srgb, var(--solarized-base01) 12%, var(--solarized-base2)));
+        border-bottom: 2px solid transparent;
+        color: var(--solarized-base01);
+        margin-bottom: -1px;
+        min-width: 0;
+    }
+
+    .experience-tab:hover {
+        background-color: color-mix(in srgb, var(--solarized-base3) 35%, transparent);
+        text-decoration: none;
+    }
+
+    .experience-tab[aria-selected="true"] {
+        background-color: color-mix(in srgb, var(--solarized-base2) 80%, var(--solarized-base3));
+        border-bottom-color: var(--solarized-cyan);
+        color: var(--solarized-base03);
     }
 
     .tag-link-0 {
