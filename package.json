@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "blog": "bun scripts/post.ts"
+    "content": "bun scripts/content.ts"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",

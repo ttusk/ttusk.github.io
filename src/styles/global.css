@@ -27,6 +27,7 @@
     body {
         background-color: var(--solarized-base3);
         color: var(--solarized-base00);
+        font-family: "Times New Roman", Times, serif;
         @apply min-h-screen;
     }
 
@@ -64,14 +65,21 @@
         @apply underline;
     }
 
+    .nav-link--active {
+        color: var(--solarized-base01);
+        text-decoration: underline;
+        text-underline-offset: 0.15em;
+    }
+
     hr {
-        border-color: var(--solarized-base2);
+        border-color: var(--solarized-base1);
+        border-style: dotted;
     }
 
     code,
     pre {
         color: var(--solarized-base01);
-        font-family: Monaco, Consolas, "Lucida Console", monospace;
+        font-family: monospace;
     }
 
     img,
@@ -87,14 +95,14 @@
         border-color: var(--solarized-base2);
     }
 
-    .code-frame-surface {
-        --frame-border-color: color-mix(in srgb, var(--solarized-base01) 12%, var(--solarized-base2));
-        border-color: var(--frame-border-color);
-        box-shadow: 0.1rem 0.1rem 0.2rem color-mix(in srgb, var(--frame-border-color) 75%, transparent);
+    .dotted-divider {
+        border-color: var(--solarized-base1);
+        border-style: dotted;
     }
 
-    .code-frame-surface > [role="tablist"] {
-        border-color: var(--frame-border-color);
+    .dotted-divider > :not([hidden]) ~ :not([hidden]) {
+        border-top-color: var(--solarized-base1);
+        border-top-style: dotted;
     }
 
     .muted {
@@ -117,26 +125,8 @@
 
     .draft-note {
         color: var(--solarized-orange);
-    }
-
-    .experience-tab {
-        background-color: transparent;
-        border-color: var(--frame-border-color, color-mix(in srgb, var(--solarized-base01) 12%, var(--solarized-base2)));
-        border-bottom: 2px solid transparent;
-        color: var(--solarized-base01);
-        margin-bottom: -1px;
-        min-width: 0;
-    }
-
-    .experience-tab:hover {
-        background-color: color-mix(in srgb, var(--solarized-base3) 35%, transparent);
-        text-decoration: none;
-    }
-
-    .experience-tab[aria-selected="true"] {
-        background-color: color-mix(in srgb, var(--solarized-base2) 80%, var(--solarized-base3));
-        border-bottom-color: var(--solarized-cyan);
-        color: var(--solarized-base03);
+        font-family: monospace;
+        font-size: 0.75rem;
     }
 
     .tag-link-0 {
@@ -170,7 +160,13 @@
     .post-content p,
     .post-content li,
     .post-content blockquote {
+        text-align: justify;
+        text-justify: inter-word;
         @apply leading-7;
+    }
+
+    .post-content {
+        overflow-wrap: anywhere;
     }
 
     .post-content ul,
@@ -215,8 +211,13 @@
     }
 
     .post-content img {
-        border: 1.5px solid #f8e0a0;
-        box-shadow: 0.1rem 0.1rem 0.2rem #00000028;
+        border: 1.5px solid var(--solarized-base2);
+        box-shadow: 0.1rem 0.1rem 0.2rem color-mix(in srgb, var(--solarized-base01) 22%, transparent);
+    }
+
+    .post-content figure img {
+        display: block;
+        margin-inline: auto;
     }
 
     .post-content figcaption {
@@ -225,6 +226,8 @@
     }
 
     .post-content table {
+        display: block;
+        overflow-x: auto;
         @apply w-full border-collapse;
     }
 

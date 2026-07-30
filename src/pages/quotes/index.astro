@@ -1,0 +1,29 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+const quotes = await getCollection(
+    "quotes",
+    ({ id, data }) => id !== "_internal" && data.internal !== true,
+);
+---
+
+<BaseLayout title="quotes" description="Citações guardadas.">
+    {quotes.length === 0 ? (
+        <p class="muted">nenhuma citação ainda.</p>
+    ) : (
+        <ul class="space-y-8">
+            {quotes.map((item) => (
+                <li>
+                    <blockquote class="border-l-2 pl-4 italic">
+                        <p>“{item.data.quote}”</p>
+                        <footer class="mt-2 not-italic">
+                            — {item.data.author}
+                            {item.data.source && <>, <cite>{item.data.source}</cite></>}
+                        </footer>
+                    </blockquote>
+                </li>
+            ))}
+        </ul>
+    )}
+</BaseLayout>

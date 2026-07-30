@@ -22,10 +22,6 @@ const seoDescription = frontmatter.description ?? "meu pedacinho de história na
 
 <BaseLayout title={seoTitle} description={seoDescription}>
     <section class="w-full">
-        <div class="mb-8">
-            <slot />
-        </div>
-
         {posts.length === 0 ? (
             <div>
                 nenhum post ainda.
@@ -49,8 +45,8 @@ const seoDescription = frontmatter.description ?? "meu pedacinho de história na
                                 ) : null}
                             </div>
                             <a href={`/${post.id}/`} class="post-title-link">
-                                {post.data.draft && <span class="draft-note">[rascunho] </span>}
                                 {post.data.title}
+                                {post.data.draft && <span class="draft-note"> DRAFT</span>}
                             </a>
                         </div>
                     </li>

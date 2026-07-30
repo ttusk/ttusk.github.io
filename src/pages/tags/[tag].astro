@@ -36,7 +36,7 @@ const tagClass = (index: number) => `tag-link-${index % 6}`;
 <BaseLayout title={`Tag: #${tag}`} description={`Posts marcados com ${tag}`}>
     <section class="w-full">
         <div class="mb-8">
-            <h1>#{tag}</h1>
+            <h1># {tag}</h1>
         </div>
 
         {posts.length === 0 ? (
@@ -62,8 +62,8 @@ const tagClass = (index: number) => `tag-link-${index % 6}`;
                                 ) : null}
                             </div>
                             <a href={`/${post.id}/`} class="post-title-link">
-                                {post.data.draft && <span class="draft-note">[rascunho] </span>}
                                 {post.data.title}
+                                {post.data.draft && <span class="draft-note"> DRAFT</span>}
                             </a>
                         </div>
                     </li>

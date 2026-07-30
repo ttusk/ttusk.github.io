@@ -15,4 +15,23 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts }
+const updates = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/updates" }),
+  schema: z.object({
+    date: z.coerce.date(),
+    update: z.string(),
+    internal: z.boolean().default(false),
+  }),
+});
+
+const quotes = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/quotes" }),
+  schema: z.object({
+    quote: z.string(),
+    author: z.string(),
+    source: z.string().optional(),
+    internal: z.boolean().default(false),
+  }),
+});
+
+export const collections = { posts, updates, quotes }

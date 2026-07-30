@@ -1,11 +1,12 @@
 ---
-import BaseLayout from "@layouts/BaseLayout.astro";
-const title = "Portfólio & Blog";
-const description = "Desenvolvedor de Software e Pesquisador.";
+import BaseLayout from "./BaseLayout.astro";
+
+const { frontmatter } = Astro.props;
+const { title, description } = frontmatter;
 ---
 
 <BaseLayout title={title} description={description}>
-    <section class="w-full space-y-8">
+    <section class="post-content w-full">
         <slot />
     </section>
 </BaseLayout>

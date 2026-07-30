@@ -1,0 +1,37 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { experiences } from "@data/experiences";
+
+const { frontmatter = {} } = Astro.props;
+const seoTitle = frontmatter.title ?? "portfolio";
+const seoDescription =
+    frontmatter.description ??
+    "Experiências em backend, dados e sistemas distribuídos.";
+---
+
+<BaseLayout title={seoTitle} description={seoDescription}>
+    <article class="w-full">
+        <section class="mb-10" aria-label="Experiência profissional">
+            <ol class="dotted-divider divide-y-2 divide-dotted border-y-2 border-dotted">
+                {experiences.map((experience) => (
+                    <li class="py-6 first:pt-5 last:pb-5">
+                        <article>
+                            <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                                <div>
+                                    <h3 class="text-base font-semibold">{experience.organization}</h3>
+                                    <p>{experience.title}</p>
+                                </div>
+                                <time class="meta-line">{experience.period}</time>
+                            </div>
+                            <ul class="mt-3 list-disc space-y-2 pl-5 leading-7">
+                                {experience.bullets.map((bullet) => (
+                                    <li>{bullet}</li>
+                                ))}
+                            </ul>
+                        </article>
+                    </li>
+                ))}
+            </ol>
+        </section>
+    </article>
+</BaseLayout>

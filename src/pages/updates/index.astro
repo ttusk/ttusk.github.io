@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+const updates = (await getCollection("updates", ({ data }) => {
+    return data.internal !== true;
+})).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const formatDate = (date: Date) =>
+    date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+---
+
+<BaseLayout title="updates" description="Atualizações de vida.">
+    {updates.length === 0 ? (
+        <p class="muted">nenhuma atualização ainda.</p>
+    ) : (
+        <ul class="space-y-5">
+            {updates.map((update) => (
+                <li>
+                    <time class="meta-line" datetime={update.data.date.toISOString()}>
+                        {formatDate(update.data.date)}
+                    </time>
+                    <p class="mt-1">{update.data.update}</p>
+                </li>
+            ))}
+        </ul>
+    )}
+</BaseLayout>

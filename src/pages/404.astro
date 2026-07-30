@@ -6,9 +6,14 @@ import BaseLayout from "@layouts/BaseLayout.astro";
     title="404 - Página não encontrada"
     description="Esta página não existe."
 >
-    <section class="w-full">
+    <section class="flex min-h-[50vh] w-full flex-col items-center justify-center text-center">
+        <img
+            src="/cowboybebop-cowboy-bebop.gif"
+            alt="Cena de Cowboy Bebop"
+            class="mb-6 w-full max-w-sm"
+        />
         <h1>404</h1>
-        <p>Essa página infelizmente não existe.</p>
-        <p><a href="/">voltar</a></p>
+        <p class="mt-2">Essa página infelizmente não existe.</p>
+        <p class="mt-4"><a href="/">voltar</a></p>
     </section>
 </BaseLayout>
