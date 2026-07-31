@@ -7,6 +7,30 @@ import expressiveCode from 'astro-expressive-code';
 const codeFontStack = 'monospace';
 
 function rehypeImageCaptions() {
+  function hasGifEmojiMarker(node) {
+    return node?.type === 'element' &&
+      node.tagName === 'img' &&
+      typeof node.properties?.alt === 'string' &&
+      node.properties.alt.startsWith('gif:');
+  }
+
+  function isGifEmoji(node) {
+    const className = node?.properties?.className;
+    return hasGifEmojiMarker(node) ||
+      (Array.isArray(className) ? className.includes('gif-emoji') : className === 'gif-emoji');
+  }
+
+  function prepareGifEmoji(node) {
+    if (!hasGifEmojiMarker(node)) return;
+
+    const className = node.properties.className;
+    node.properties.className = [
+      ...(Array.isArray(className) ? className : className ? [className] : []),
+      'gif-emoji',
+    ];
+    node.properties.alt = node.properties.alt.slice('gif:'.length).trim();
+  }
+
   function isWhitespaceText(node) {
     return node?.type === 'text' && !node.value.trim();
   }
@@ -18,7 +42,7 @@ function rehypeImageCaptions() {
     if (children.length !== 1) return null;
 
     const child = children[0];
-    if (child?.type === 'element' && child.tagName === 'img' && child.properties?.alt) {
+    if (child?.type === 'element' && child.tagName === 'img' && child.properties?.alt && !isGifEmoji(child)) {
       return { mediaNode: child, caption: String(child.properties.alt) };
     }
 
@@ -29,7 +53,7 @@ function rehypeImageCaptions() {
       child.children.length === 1
     ) {
       const image = child.children[0];
-      if (image?.type === 'element' && image.tagName === 'img' && image.properties?.alt) {
+      if (image?.type === 'element' && image.tagName === 'img' && image.properties?.alt && !isGifEmoji(image)) {
         return { mediaNode: child, caption: String(image.properties.alt) };
       }
     }
@@ -38,6 +62,7 @@ function rehypeImageCaptions() {
   }
 
   function visit(node, parent) {
+    prepareGifEmoji(node);
     if (!node || !Array.isArray(node.children)) return;
 
     for (const child of node.children) {

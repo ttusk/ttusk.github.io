@@ -1,11 +1,16 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { formatDate } from "../../utils/format-date";
 
-const updates = (await getCollection("updates", ({ data }) => {
+const entries = (await getCollection("updates", ({ data }) => {
     return data.internal !== true;
 })).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const updates = await Promise.all(entries.map(async (update) => ({
+    update,
+    Content: (await render(update)).Content,
+})));
 
 ---
 
@@ -14,12 +19,15 @@ const updates = (await getCollection("updates", ({ data }) => {
         <p class="muted">nenhuma atualização ainda.</p>
     ) : (
         <ul class="space-y-5">
-            {updates.map((update) => (
+            {updates.map(({ update, Content }) => (
                 <li>
                     <time class="meta-line" datetime={update.data.date.toISOString()}>
                         {formatDate(update.data.date)}
                     </time>
                     <p class="mt-1">{update.data.update}</p>
+                    <div class="muted mt-1 text-sm">
+                        <Content />
+                    </div>
                 </li>
             ))}
         </ul>

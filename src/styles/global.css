@@ -109,6 +109,15 @@
         color: var(--solarized-base1);
     }
 
+    .gif-emoji {
+        display: inline-block;
+        width: 1.2em;
+        height: 1.2em;
+        max-width: 1.2em;
+        object-fit: contain;
+        vertical-align: -0.2em;
+    }
+
     .meta-line {
         color: var(--solarized-base1);
         @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-sm;

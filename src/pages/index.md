@@ -4,6 +4,8 @@ title: início
 description: esse é o meu pedacinho de história na internet.
 ---
 
-![ed.gif](../assets/img/cowboy-bebop-arrival.gif)
+![cowboy-bebop-arrival.gif](../assets/img/cowboy-bebop-arrival.gif)
 
-<!-- escreva abaixo -->
+**seja bem vindo(a)!**
+
+esse é o meu pedaço de história na internet. aqui eu compartilho novidades da minha vida e escrevo sobre tudo o que me encanta.

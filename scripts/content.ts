@@ -111,16 +111,15 @@ async function createPost() {
 }
 
 async function createUpdate() {
-    const response = await prompts({
-        type: "text",
-        name: "update",
-        message: "Update",
-    });
+    const response = await prompts([
+        { type: "text", name: "update", message: "Update title" },
+        { type: "text", name: "description", message: "Vague description (optional)" },
+    ]);
 
     if (!response.update) return;
 
     const filePath = nextFilePath("update", response.update);
-    await Bun.write(filePath, ["---", `date: ${today()}`, `update: ${asYaml(response.update)}`, "---", ""].join("\n"));
+    await Bun.write(filePath, ["---", `date: ${today()}`, `update: ${asYaml(response.update)}`, "---", "", response.description ?? "", ""].join("\n"));
     console.log(`Created ${filePath}`);
 }
 
