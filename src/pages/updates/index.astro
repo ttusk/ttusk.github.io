@@ -1,17 +1,12 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { formatDate } from "../../utils/format-date";
 
 const updates = (await getCollection("updates", ({ data }) => {
     return data.internal !== true;
 })).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const formatDate = (date: Date) =>
-    date.toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
 ---
 
 <BaseLayout title="updates" description="Atualizações de vida.">

@@ -1,17 +1,12 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import { formatDate } from "../utils/format-date";
 
 const { frontmatter } = Astro.props;
 
 const { title, description, tldr, date, publishDate, tags } = frontmatter || Astro.props;
 const createdTime = date ? new Date(date).toISOString() : undefined;
 const publishedTime = publishDate ? new Date(publishDate).toISOString() : undefined;
-const formatDate = (value: Date | string) =>
-    new Date(value).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
 const shouldShowBothDates = Boolean(
     date &&
     publishDate &&

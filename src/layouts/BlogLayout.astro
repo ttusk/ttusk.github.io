@@ -1,14 +1,9 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
+import { formatDate } from "../utils/format-date";
 
 const { frontmatter = {} } = Astro.props;
-const formatDate = (date: Date) =>
-    date.toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
 
 const posts = (await getCollection("posts", ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true;
