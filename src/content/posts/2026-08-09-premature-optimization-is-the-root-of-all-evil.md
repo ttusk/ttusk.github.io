@@ -29,7 +29,7 @@ Esse sentimento de comodidade tomou conta de mim, e eu senti que precisava de um
 
 ## Novamente um *hard-user*
 
-Sim, acabei voltando para as ferramentas de *hard-user*. Atualmente tenho um setup muito simples, que pode ser econtrado nos meus [dotfiles](https://github.com/ttusk/dotfiles), ele consiste em:
+Sim, acabei voltando para as ferramentas de *hard-user*. Atualmente tenho um setup muito simples, esse que pode ser encontrado nos meus [dotfiles](https://github.com/ttusk/dotfiles), ele consiste em:
 
 - [Pi](https://github.com/earendil-works/pi) -- harness principal, estou usando o [Oh My Pi](https://github.com/can1357/oh-my-pi) para diminuir a fricção inicial
 - [Neovim](https://neovim.io/) -- com uma configuração **muito** simples (*linter*, *diff*, *file-tree*, *surround*, *fuzzy-finder*) e sem uma distribuição de Neovim
