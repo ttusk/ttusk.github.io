@@ -4,7 +4,7 @@ description: "Otimizar de forma prematura o seu workflow irá te causar mais pro
 tldr: true
 date: 2026-08-09
 publishDate: 2026-08-09
-draft: true
+draft: false
 tags: ["setup", "opiniao"]
 ---
 
