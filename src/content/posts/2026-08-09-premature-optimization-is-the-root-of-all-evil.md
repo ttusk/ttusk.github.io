@@ -1,6 +1,6 @@
 ---
-title: "\"Premature optimization is the root of all evil\""
-description: "Otimizar de forma prematura o seu workflow irá te causar mais problemas que ajudar (na maioria das vezes)."
+title: "Premature optimization is the root of all evil"
+description: "Otimizar de forma prematura o seu workflow irá te causar mais problemas que ajudar."
 tldr: true
 date: 2026-08-09
 publishDate: 2026-08-09
@@ -42,10 +42,11 @@ Pode parecer uma contradição, porém o que eu fiz vai de encontro com a frase 
 >
 > Donald Knuth, 1974
 
-Eu não otimizei meu *workflow* a partir de um necessidade de parecer diferente, eu otimizei a partir de uma necessidade muito objetiva: ter mais contato dentro do processo de engenharia de software. A configuração ainda é **muito** simples, justamente por conter apenas o que **eu** preciso, sem distribuições malucas de Neovim que já vem com 1000 plugins embutidos, esses que eu nem sei que estão ali, ao mesmo tempo se mantendo funcional diante das minhas necessidades.
+Eu não otimizei meu *workflow* a partir de um necessidade de parecer diferente, eu otimizei a partir de uma necessidade muito objetiva: ter mais contato dentro do processo de engenharia de software. A configuração ainda é **muito** simples, justamente por conter apenas o que **eu** preciso, sem distribuições malucas de Neovim que já vem com 1000 plugins embutidos, esses que eu nem sei que estão ali, ao mesmo tempo se mantendo funcional diante das minhas necessidades. A minha ideia é fazer um *pair-programming* com o agente, ao invés de settar um `/goal` e rezar pelo melhor -- rs.
 
 ## Imagem do *setup*
 
 ![Screenshot do setup](../../assets/img/setup-screenshot.png)
+
 
 Para variar, eu ainda assim não vou conseguir programar em Java usando esse *setup* (-_-)
