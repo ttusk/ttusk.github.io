@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { headings = [] } = Astro.props;
-const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
+const items = headings;
 ---
 
 {items.length > 0 && (
@@ -15,7 +15,7 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
 
         <ul>
             {items.map(({ depth, slug, text }) => (
-                <li class:list={["post-toc-item", { "post-toc-item--nested": depth === 3 }]}>
+                <li class="post-toc-item" style={`margin-inline-start: ${(depth - 1) * 1.25}rem;`}>
                     <a href={`#${slug}`}>{text}</a>
                 </li>
             ))}
@@ -39,9 +39,6 @@ const items = headings.filter(({ depth }) => depth === 2 || depth === 3);
         padding-inline-start: 1.5rem;
     }
 
-    .post-toc-item--nested {
-        margin-inline-start: 1.25rem;
-    }
 
     .post-toc-item a:focus-visible {
         outline: 2px solid var(--solarized-blue);
