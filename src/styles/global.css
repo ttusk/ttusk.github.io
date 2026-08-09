@@ -1,3 +1,12 @@
+@font-face {
+    font-family: "Cheltenham Bold Condensed";
+    src: url("/fonts/cheltenham-bold-condensed.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+}
+
+
 @import "tailwindcss";
 
 @layer base {
@@ -147,6 +156,11 @@
 
     .muted {
         color: var(--solarized-base1);
+    }
+
+    .post-signoff {
+        font-family: "Cheltenham Bold Condensed", serif;
+        font-weight: 700;
     }
 
     .gif-emoji {
