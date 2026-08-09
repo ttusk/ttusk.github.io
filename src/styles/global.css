@@ -18,6 +18,8 @@
         --solarized-blue: #268bd2;
         --solarized-cyan: #2aa198;
         --solarized-green: #859900;
+        --font-mono: Monaco, "Lucida Console", monospace;
+        --nvim-divider-pattern: "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
     }
 
     html {
@@ -72,14 +74,26 @@
     }
 
     hr {
-        border-color: var(--solarized-base1);
-        border-style: dotted;
+        border: 0;
+        color: var(--solarized-base1);
+        font-family: var(--font-mono);
+        font-size: 1.125rem;
+        height: 1.125rem;
+        line-height: 1.125rem;
+        overflow: hidden;
+        text-align: center;
+        white-space: normal;
+        word-spacing: -0.65em;
+    }
+
+    hr::before {
+        content: var(--nvim-divider-pattern);
     }
 
     code,
     pre {
         color: var(--solarized-base01);
-        font-family: monospace;
+        font-family: var(--font-mono);
     }
 
     img,
@@ -95,14 +109,40 @@
         border-color: var(--solarized-base2);
     }
 
-    .dotted-divider {
-        border-color: var(--solarized-base1);
-        border-style: dotted;
+    .nvim-divider {
+        position: relative;
     }
 
-    .dotted-divider > :not([hidden]) ~ :not([hidden]) {
-        border-top-color: var(--solarized-base1);
-        border-top-style: dotted;
+    .nvim-divider > :not([hidden]) {
+        position: relative;
+    }
+
+    .nvim-divider::before,
+    .nvim-divider::after,
+    .nvim-divider > :not([hidden]) ~ :not([hidden])::before {
+        color: var(--solarized-base1);
+        content: var(--nvim-divider-pattern);
+        font-family: var(--font-mono);
+        font-size: 1.125rem;
+        height: 1.125rem;
+        inset-inline: 0;
+        line-height: 1.125rem;
+        overflow: hidden;
+        position: absolute;
+        text-align: center;
+        white-space: normal;
+        word-spacing: -0.65em;
+    }
+
+    .nvim-divider::before,
+    .nvim-divider > :not([hidden]) ~ :not([hidden])::before {
+        top: 0;
+        transform: translateY(-50%);
+    }
+
+    .nvim-divider::after {
+        bottom: 0;
+        transform: translateY(50%);
     }
 
     .muted {
@@ -134,32 +174,17 @@
 
     .draft-note {
         color: var(--solarized-orange);
-        font-family: monospace;
+        font-family: var(--font-mono);
         font-size: 0.75rem;
     }
 
-    .tag-link-0 {
-        color: var(--solarized-blue);
-    }
-
-    .tag-link-1 {
-        color: var(--solarized-cyan);
-    }
-
-    .tag-link-2 {
-        color: var(--solarized-green);
-    }
-
-    .tag-link-3 {
-        color: var(--solarized-violet);
-    }
-
-    .tag-link-4 {
-        color: var(--solarized-yellow);
-    }
-
+    .tag-link-0,
+    .tag-link-1,
+    .tag-link-2,
+    .tag-link-3,
+    .tag-link-4,
     .tag-link-5 {
-        color: var(--solarized-magenta);
+        color: var(--solarized-blue);
     }
 
     .post-content > * + * {
@@ -176,6 +201,10 @@
 
     .post-content {
         overflow-wrap: anywhere;
+    }
+
+    .post-content :is(h2, h3) {
+        scroll-margin-top: 1.5rem;
     }
 
     .post-content ul,

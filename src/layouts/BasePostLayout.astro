@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import TableOfContents from "../components/TableOfContents.astro";
 import { formatDate } from "../utils/format-date";
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings = [] } = Astro.props;
 
 const { title, description, tldr, date, publishDate, tags } = frontmatter || Astro.props;
 const createdTime = date ? new Date(date).toISOString() : undefined;
@@ -101,6 +102,8 @@ const articleSchema = {
                 </p>
             </section>
         )}
+
+        <TableOfContents headings={headings} />
 
         <div class="post-content">
             <slot />

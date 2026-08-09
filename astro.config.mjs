@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 // import icon from "astro-icon";
 import expressiveCode from 'astro-expressive-code';
 
-const codeFontStack = 'monospace';
+const codeFontStack = 'Monaco, "Lucida Console", monospace';
 
 function rehypeImageCaptions() {
   function hasGifEmojiMarker(node) {
@@ -102,6 +102,7 @@ export default defineConfig({
     styleOverrides: {
       borderRadius: '0',
       codeFontFamily: codeFontStack,
+      codeFontSize: '0.8rem',
     },
   })],
   vite: {
