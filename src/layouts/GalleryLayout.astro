@@ -1,0 +1,85 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+const galleryItems = (await getCollection("gallery")).sort((a, b) =>
+    a.id.localeCompare(b.id),
+);
+
+const { frontmatter = {} } = Astro.props;
+const seoTitle = frontmatter.title ?? "galeria";
+const seoDescription =
+    frontmatter.description ??
+    "imagens, vídeos e referências culturais que gosto de deixar por aqui.";
+const keywords = frontmatter.keywords ?? ["cultura", "filmes", "animação", "música"];
+---
+
+<BaseLayout title={seoTitle} description={seoDescription} keywords={keywords}>
+    <section class="w-full" aria-label={seoTitle}>
+        <header class="mb-0 pb-0">
+            <div class="max-w-[34rem] leading-7">
+                <slot />
+            </div>
+        </header>
+        <hr class="my-2" />
+
+        {galleryItems.length === 0 ? (
+            <p class="muted">nenhum item na galeria ainda.</p>
+        ) : (
+            <ul class="m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2">
+                {galleryItems.map((item) => (
+                    <li>
+                        <article class="h-full border border-[var(--solarized-base2)] bg-[color-mix(in_srgb,var(--solarized-base3)_72%,var(--solarized-base2))]">
+                            <div class="aspect-[4/3] overflow-hidden bg-[var(--solarized-base2)]">
+                                {item.data.kind === "image" ? (
+                                    <img
+                                        class="block h-full w-full object-contain"
+                                        src={item.data.image.src}
+                                        width={item.data.image.width}
+                                        height={item.data.image.height}
+                                        alt={item.data.alt}
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <a
+                                        class="relative block h-full w-full text-[var(--solarized-base3)]"
+                                        href={item.data.sourceUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        aria-label={`assistir ${item.data.title} no YouTube`}
+                                    >
+                                        <img
+                                            class="block h-full w-full object-cover"
+                                            src={item.data.thumbnailUrl}
+                                            alt={`Miniatura do vídeo ${item.data.title}.`}
+                                            loading="lazy"
+                                        />
+                                        <span
+                                            class="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--solarized-base3)] bg-[color-mix(in_srgb,var(--solarized-base03)_78%,transparent)] text-xl"
+                                            aria-hidden="true"
+                                        >
+                                            ▶
+                                        </span>
+                                    </a>
+                                )}
+                            </div>
+                            <div class="p-4">
+                                <h2 class="text-xl">{item.data.title}</h2>
+                                <p class="mt-1 leading-[1.6]">{item.data.description}</p>
+                                {item.data.kind === "video" && (
+                                    <a
+                                        class="mt-3 inline-block font-mono text-xs"
+                                        href={item.data.sourceUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        ver no YouTube ↗
+                                    </a>
+                                )}
+                            </div>
+                        </article>
+                    </li>
+                ))}
+            </ul>
+        )}
+    </section>
+</BaseLayout>

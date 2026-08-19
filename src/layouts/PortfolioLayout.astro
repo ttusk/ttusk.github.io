@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import { experiences } from "@data/experiences";
+import { getCollection } from "astro:content";
+const experiences = (await getCollection("experiences")).sort((a, b) =>
+    a.id.localeCompare(b.id),
+);
 
 const { frontmatter = {} } = Astro.props;
 const seoTitle = frontmatter.title ?? "portfolio";
@@ -13,7 +16,7 @@ const seoDescription =
     <article class="w-full">
         <section class="mb-10" aria-label="Experiência profissional">
             <ol class="nvim-divider">
-                {experiences.map((experience) => (
+                {experiences.map(({ data: experience }) => (
                     <li class="py-6 first:pt-5 last:pb-5">
                         <article>
                             <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">

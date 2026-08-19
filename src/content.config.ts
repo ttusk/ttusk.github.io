@@ -1,6 +1,6 @@
 import { defineCollection } from "astro:content";
 import { z } from "astro/zod";
-import { file, glob } from "astro/loaders";
+import { glob } from "astro/loaders";
 
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/posts" }),
@@ -33,5 +33,33 @@ const quotes = defineCollection({
     internal: z.boolean().default(false),
   }),
 });
+const gallery = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/gallery" }),
+  schema: ({ image }) => z.discriminatedUnion("kind", [
+    z.object({
+      kind: z.literal("image"),
+      title: z.string(),
+      description: z.string(),
+      alt: z.string(),
+      image: image(),
+    }),
+    z.object({
+      kind: z.literal("video"),
+      title: z.string(),
+      description: z.string(),
+      thumbnailUrl: z.string().url(),
+      sourceUrl: z.string().url(),
+    }),
+  ]),
+});
+const experiences = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/experiences" }),
+  schema: z.object({
+    title: z.string(),
+    organization: z.string(),
+    period: z.string(),
+    bullets: z.array(z.string()),
+  }),
+});
 
-export const collections = { posts, updates, quotes }
+export const collections = { posts, updates, quotes, gallery, experiences };

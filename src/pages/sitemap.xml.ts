@@ -17,6 +17,9 @@ export async function GET() {
             lastmod: new Date().toISOString(),
         },
         {
+            url: `${site}/gallery/`,
+        },
+        {
             url: `${site}/rss.xml`,
         },
     ];
