@@ -152,9 +152,9 @@ export default defineConfig({
     },
   })],
   vite: {
-    // Astro and Tailwind expose separate Vite type instances at check time.
-    // @ts-expect-error The plugin is runtime-compatible with Astro's Vite.
-    plugins: [tailwindcss()],
+    plugins: /** @type {NonNullable<import("astro").ViteUserConfig["plugins"]>} */ (
+      /** @type {unknown} */ (tailwindcss())
+    ),
   },
   markdown: {
     rehypePlugins: [rehypeImageCaptions],
