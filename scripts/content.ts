@@ -1,55 +1,93 @@
 #!/usr/bin/env bun
-import { existsSync, readdirSync } from "fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { basename, dirname, join, resolve } from "node:path";
 import cac from "cac";
-import prompts from "prompts";
-import kleur from "kleur";
-import figures from "prompts/lib/util/figures.js";
+import prompts, {
+    type PromptAnswers,
+    type PromptObject,
+    type PromptRenderContext,
+    type PromptValue,
+} from "prompts";
 
-kleur.enabled = true;
 
-Object.assign(figures, {
-    arrowUp: "^",
-    arrowDown: "v",
-    arrowLeft: "<",
-    arrowRight: ">",
-    radioOn: "(*)",
-    radioOff: "( )",
-    tick: "OK",
-    cross: "X",
-    ellipsis: "...",
-    pointerSmall: ">",
-    line: "-",
-    pointer: ">",
-});
-
-type ContentType = "post" | "update" | "quote" | "gallery" | "experience";
-type GalleryKind = "image" | "video";
-type Draft = Record<string, unknown>;
-type PromptQuestion = {
-    name: string;
-    message: string;
-    [key: string]: unknown;
+type ContentType = "post" | "update" | "experience";
+type Draft = {
+    title?: string;
+    description?: string;
+    tldr?: boolean;
+    tags?: string;
+    update?: string;
+    organization?: string;
+    period?: string;
+    bullets?: string;
+    [key: string]: PromptValue;
 };
-type PromptContext = {
-    value: unknown;
-    msg: string;
-    done: boolean;
-    rendered?: string;
+type Preview = (draft: Draft) => string[];
+type CliOptions = {
+    help: boolean;
+    type: string | undefined;
+    title: string | undefined;
+    description: string | undefined;
+    tags: string | undefined;
+    slug: string | undefined;
+    open: boolean | undefined;
+    strict: boolean;
+};
+type PromptQuestion = PromptObject;
+type PromptContext = PromptRenderContext;
+type PostFields = {
+    title?: string;
+    description?: string;
+    descricao?: string;
+    tldr?: string;
+    date?: string;
+    publishDate?: string;
+    draft?: string;
+    tags?: string;
+    [key: string]: string | undefined;
+};
+type ParsedPost = {
+    filePath: string;
+    id: string;
+    fields: PostFields;
+    frontmatter: string;
+    body: string;
+};
+type CheckIssue = {
+    level: "error" | "warning";
+    message: string;
 };
 
 const directories: Record<ContentType, string> = {
     post: "./src/content/posts",
     update: "./src/content/updates",
-    quote: "./src/content/quotes",
-    gallery: "./src/content/gallery",
     experience: "./src/content/experiences",
+};
+const aliases: Record<string, ContentType> = {
+    post: "post",
+    postagem: "post",
+    update: "update",
+    atualizacao: "update",
+    experience: "experience",
+    experiencia: "experience",
 };
 
 const cli = cac("content");
+cli.usage("new [tipo] | status | publish <post> | check");
 cli.option(
     "--type <type>",
-    "Tipo: post, update, quote, gallery ou experience",
+    "Tipo: post, update ou experience",
 );
+cli.option("--title <title>", "Titulo inicial de um post");
+cli.option("--description <description>", "Descricao inicial de um post");
+cli.option("--tags <tags>", "Tags iniciais separadas por virgula");
+cli.option("--slug <slug>", "Slug do arquivo do post");
+cli.option("--no-open", "Nao abrir o editor depois de criar um post");
+cli.option("--strict", "Tratar avisos do check como erros");
+cli.example("content new post");
+cli.example("content status");
+cli.example("content publish 2026-08-18-meu-post");
+cli.example("content check");
 cli.help((sections) =>
     sections.map((section) => ({
         ...section,
@@ -57,7 +95,18 @@ cli.help((sections) =>
     })),
 );
 
-const { options } = cli.parse();
+const { options: parsedOptions } = cli.parse();
+const rawOptions = parsedOptions as Record<string, unknown>;
+const options: CliOptions = {
+    help: rawOptions["help"] === true,
+    type: typeof rawOptions["type"] === "string" ? rawOptions["type"] : undefined,
+    title: typeof rawOptions["title"] === "string" ? rawOptions["title"] : undefined,
+    description: typeof rawOptions["description"] === "string" ? rawOptions["description"] : undefined,
+    tags: typeof rawOptions["tags"] === "string" ? rawOptions["tags"] : undefined,
+    slug: typeof rawOptions["slug"] === "string" ? rawOptions["slug"] : undefined,
+    open: typeof rawOptions["open"] === "boolean" ? rawOptions["open"] : undefined,
+    strict: rawOptions["strict"] === true,
+};
 
 if (options.help) {
     process.exit(0);
@@ -92,16 +141,39 @@ function previewBlock(lines: string[]) {
         "  +--",
     ].join("\n");
 }
+function toDraft(response: PromptAnswers): Draft {
+    const draft: Draft = {};
+    for (const [name, value] of Object.entries(response)) {
+        if (name === "tldr") {
+            if (value !== undefined && typeof value !== "boolean") {
+                throw new Error("A resposta de tldr deve ser booleana.");
+            }
+            if (value !== undefined) {
+                draft.tldr = value;
+            }
+            continue;
+        }
+
+        if (value !== undefined && typeof value !== "string") {
+            throw new Error(`A resposta de ${name} deve ser texto.`);
+        }
+        if (value !== undefined) {
+            draft[name] = value;
+        }
+    }
+    return draft;
+}
+
 
 async function askWithPreview(
     questions: PromptQuestion[],
     renderPreview: Preview,
-) {
-    const answers: Draft = {};
+): Promise<Draft> {
+    const answers: PromptAnswers = {};
     const decoratedQuestions = questions.map((question) => ({
         ...question,
         onRender(this: PromptContext) {
-            const draft = { ...answers, [question.name]: this.value };
+            const draft: Draft = { ...answers, [question.name]: this.value };
             const activeMessage = `\u001b[36m${question.message}\u001b[39m`;
             this.msg = this.done
                 ? question.message
@@ -109,17 +181,18 @@ async function askWithPreview(
         },
     }));
 
-    return prompts(decoratedQuestions, {
-        onSubmit(question: PromptQuestion, answer: unknown) {
+    const response = await prompts(decoratedQuestions, {
+        onSubmit(question: PromptQuestion, answer: PromptValue) {
             answers[question.name] = answer;
         },
     });
+    return toDraft(response);
 }
 
 function nextFilePath(type: ContentType, suffix: string) {
     const safe = safeSuffix(suffix, type);
 
-    if (type === "gallery" || type === "experience") {
+    if (type === "experience") {
         const largestNumber = readdirSync(directories[type]).reduce((largest, file) => {
             const match = file.match(/^(\d+)-/);
             return Math.max(largest, match ? Number(match[1]) : 0);
@@ -150,8 +223,9 @@ function previewPost(draft: Draft) {
     return [
         `title: ${asYaml(String(draft.title ?? ""))}`,
         `description: ${asYaml(String(draft.description ?? ""))}`,
+        `tldr: ${draft.tldr === true}`,
         `tags: ${String(draft.tags ?? "") || "[]"}`,
-        `draft: ${draft.draft === undefined ? "true" : String(draft.draft)}`,
+        "draft: true",
     ];
 }
 
@@ -164,35 +238,7 @@ function previewUpdate(draft: Draft) {
     ];
 }
 
-function previewQuote(draft: Draft) {
-    return [
-        `quote: ${asYaml(String(draft.quote ?? ""))}`,
-        `author: ${asYaml(String(draft.author ?? ""))}`,
-        `source: ${asYaml(String(draft.source ?? ""))}`,
-    ];
-}
 
-function previewGallery(draft: Draft) {
-    const kind = String(draft.kind ?? "image");
-    const common = [
-        `kind: ${kind}`,
-        `title: ${asYaml(String(draft.title ?? ""))}`,
-        `description: ${asYaml(String(draft.description ?? ""))}`,
-    ];
-
-    if (kind === "image") {
-        return [
-            ...common,
-            `alt: ${asYaml(String(draft.alt ?? ""))}`,
-            `image: ../../assets/gallery/${String(draft.filename ?? "")}`,
-        ];
-    }
-
-    return [
-        ...common,
-        `sourceUrl: ${String(draft.sourceUrl ?? "")}`,
-    ];
-}
 
 function previewExperience(draft: Draft) {
     const bullets = String(draft.bullets ?? "")
@@ -209,23 +255,13 @@ function previewExperience(draft: Draft) {
     ];
 }
 
-async function chooseType(): Promise<ContentType | undefined> {
-    const aliases: Record<string, ContentType> = {
-        post: "post",
-        postagem: "post",
-        update: "update",
-        atualizacao: "update",
-        quote: "quote",
-        citacao: "quote",
-        gallery: "gallery",
-        galeria: "gallery",
-        experience: "experience",
-        experiencia: "experience",
-    };
-    const requestedType = String(options.type ?? "").toLowerCase();
 
-    if (requestedType) {
-        return aliases[requestedType];
+async function chooseType(requestedType?: string): Promise<ContentType | undefined> {
+    const requested = requestedType ?? String(options.type ?? "").toLowerCase();
+    const selected = requested ? aliases[requested] : undefined;
+
+    if (requested) {
+        return selected;
     }
 
     const response = await prompts({
@@ -236,24 +272,72 @@ async function chooseType(): Promise<ContentType | undefined> {
         choices: [
             { title: "Post", value: "post" },
             { title: "Atualizacao de vida", value: "update" },
-            { title: "Citacao", value: "quote" },
-            { title: "Item da galeria", value: "gallery" },
             { title: "Experiencia profissional", value: "experience" },
         ],
     });
 
-    return response.type;
+    const selectedValue = response["type"];
+    return typeof selectedValue === "string"
+        ? aliases[selectedValue.toLowerCase()]
+        : undefined;
+}
+
+function openEditor(filePath: string) {
+    if (options.open === false) {
+        return;
+    }
+
+    const editor = process.env["VISUAL"]?.trim() ||
+        process.env["EDITOR"]?.trim() ||
+        (process.platform === "darwin" ? "open -t" : undefined);
+    if (!editor) {
+        console.log(`Edite o arquivo: ${filePath}`);
+        return;
+    }
+
+    const result = Bun.spawnSync({
+        cmd: ["sh", "-c", `${editor} "$1"`, "content-editor", filePath],
+        stdin: "inherit",
+        stdout: "inherit",
+        stderr: "inherit",
+    });
+
+    if (result.exitCode !== 0) {
+        throw new Error(`O editor terminou com codigo ${result.exitCode}.`);
+    }
 }
 
 async function createPost() {
     const response = await askWithPreview([
-        { type: "text", name: "title", message: "Titulo" },
-        { type: "text", name: "description", message: "Descricao curta (opcional)" },
-        { type: "text", name: "tags", message: "Tags separadas por virgula (opcional)" },
-        { type: "confirm", name: "draft", message: "Salvar como rascunho?", initial: true },
+        {
+            type: "text",
+            name: "title",
+            message: "Titulo",
+            initial: options.title ?? "",
+            validate: (value: string) => value.trim() ? true : "Informe um titulo.",
+        },
+        {
+            type: "text",
+            name: "description",
+            message: "Descricao curta (opcional)",
+            initial: options.description ?? "",
+        },
+        {
+            type: "text",
+            name: "tags",
+            message: "Tags separadas por virgula (opcional)",
+            initial: options.tags ?? "",
+        },
+        {
+            type: "confirm",
+            name: "tldr",
+            message: "Mostrar tl;dr?",
+            initial: false,
+        },
     ], previewPost);
 
-    if (!response.title) return;
+    const title = String(response.title ?? "").trim();
+    if (!title) return;
 
     const tags = String(response.tags ?? "")
         .split(",")
@@ -262,20 +346,21 @@ async function createPost() {
     const date = today();
     const lines = [
         "---",
-        `title: ${asYaml(response.title)}`,
-        ...(response.description ? [`description: ${asYaml(response.description)}`] : []),
-        "tldr: false",
+        `title: ${asYaml(title)}`,
+        ...(response.description ? [`description: ${asYaml(String(response.description).trim())}`] : []),
+        `tldr: ${response.tldr === true}`,
         `date: ${date}`,
         `publishDate: ${date}`,
-        `draft: ${response.draft !== false}`,
+        "draft: true",
         ...(tags.length > 0 ? [`tags: [${tags.map(asYaml).join(", ")}]`] : []),
         "---",
         "",
     ];
 
-    const filePath = nextFilePath("post", response.title);
+    const filePath = nextFilePath("post", options.slug || title);
     await Bun.write(filePath, lines.join("\n"));
-    console.log(`Criado: ${filePath}`);
+    console.log(`Rascunho criado: ${filePath}`);
+    openEditor(filePath);
 }
 
 async function createUpdate() {
@@ -286,32 +371,19 @@ async function createUpdate() {
 
     if (!response.update) return;
 
-    const filePath = nextFilePath("update", response.update);
-    await Bun.write(filePath, ["---", `date: ${today()}`, `update: ${asYaml(response.update)}`, "---", "", response.description ?? "", ""].join("\n"));
-    console.log(`Criado: ${filePath}`);
-}
-
-async function createQuote() {
-    const response = await askWithPreview([
-        { type: "text", name: "quote", message: "Citacao" },
-        { type: "text", name: "author", message: "Autor" },
-        { type: "text", name: "source", message: "Fonte (opcional)" },
-    ], previewQuote);
-
-    if (!response.quote || !response.author) return;
-
-    const lines = [
+    const filePath = nextFilePath("update", String(response.update));
+    await Bun.write(filePath, [
         "---",
-        `quote: ${asYaml(response.quote)}`,
-        `author: ${asYaml(response.author)}`,
-        ...(response.source ? [`source: ${asYaml(response.source)}`] : []),
+        `date: ${today()}`,
+        `update: ${asYaml(String(response.update))}`,
         "---",
         "",
-    ];
-    const filePath = nextFilePath("quote", response.author);
-    await Bun.write(filePath, lines.join("\n"));
+        response.description ?? "",
+        "",
+    ].join("\n"));
     console.log(`Criado: ${filePath}`);
 }
+
 
 function splitBullets(value: string) {
     return String(value ?? "")
@@ -320,97 +392,7 @@ function splitBullets(value: string) {
         .filter(Boolean);
 }
 
-function youtubeThumbnail(sourceUrl: string) {
-    try {
-        const url = new URL(sourceUrl);
-        const videoId = url.hostname === "youtu.be"
-            ? url.pathname.slice(1)
-            : url.searchParams.get("v");
-        return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : "";
-    } catch {
-        return "";
-    }
-}
 
-async function createGallery() {
-    const kindResponse = await askWithPreview([
-        {
-            type: "select",
-            name: "kind",
-            message: "Qual tipo de item?",
-            hint: "- Use as setas. Pressione Enter para confirmar.",
-            choices: [
-                { title: "Imagem", value: "image" },
-                { title: "Link de video", value: "video" },
-            ],
-        },
-    ], previewGallery);
-    const kind = kindResponse.kind as GalleryKind | undefined;
-    if (!kind) return;
-
-    const response = await askWithPreview([
-        { type: "text", name: "title", message: "Titulo" },
-        { type: "text", name: "description", message: "Descricao" },
-    ], (draft) => previewGallery({ kind, ...draft }));
-    if (!response.title || !response.description) return;
-
-    let lines: string[];
-    if (kind === "image") {
-        const image = await askWithPreview([
-            {
-                type: "text",
-                name: "filename",
-                message: "Nome do arquivo em src/assets/gallery",
-            },
-            { type: "text", name: "alt", message: "Texto alternativo" },
-        ], (draft) => previewGallery({ ...response, kind, ...draft }));
-        const filename = String(image.filename ?? "").trim();
-        const assetPath = `./src/assets/gallery/${filename}`;
-        if (!filename || filename.includes("/") || !existsSync(assetPath)) {
-            console.error(`Arquivo nao encontrado: ${assetPath}`);
-            process.exitCode = 1;
-            return;
-        }
-        if (!image.alt) return;
-
-        lines = [
-            "---",
-            "kind: image",
-            `title: ${asYaml(response.title)}`,
-            `description: ${asYaml(response.description)}`,
-            `alt: ${asYaml(image.alt)}`,
-            `image: ${asYaml(`../../assets/gallery/${filename}`)}`,
-            "---",
-            "",
-        ];
-    } else {
-        const video = await askWithPreview([
-            { type: "text", name: "sourceUrl", message: "URL do video" },
-        ], (draft) => previewGallery({ ...response, kind, ...draft }));
-        const sourceUrl = String(video.sourceUrl ?? "").trim();
-        const thumbnailUrl = youtubeThumbnail(sourceUrl);
-        if (!sourceUrl || !thumbnailUrl) {
-            console.error("Informe uma URL valida de um video do YouTube.");
-            process.exitCode = 1;
-            return;
-        }
-
-        lines = [
-            "---",
-            "kind: video",
-            `title: ${asYaml(response.title)}`,
-            `description: ${asYaml(response.description)}`,
-            `thumbnailUrl: ${asYaml(thumbnailUrl)}`,
-            `sourceUrl: ${asYaml(sourceUrl)}`,
-            "---",
-            "",
-        ];
-    }
-
-    const filePath = nextFilePath("gallery", response.title);
-    await Bun.write(filePath, lines.join("\n"));
-    console.log(`Criado: ${filePath}`);
-}
 
 async function createExperience() {
     const response = await askWithPreview([
@@ -423,39 +405,320 @@ async function createExperience() {
             message: "Topicos (um por linha)",
         },
     ], previewExperience);
-    const bullets = splitBullets(response.bullets);
+    const bullets = splitBullets(String(response.bullets ?? ""));
 
     if (!response.organization || !response.title || !response.period || bullets.length === 0) return;
 
     const lines = [
         "---",
-        `title: ${asYaml(response.title)}`,
-        `organization: ${asYaml(response.organization)}`,
-        `period: ${asYaml(response.period)}`,
+        `title: ${asYaml(String(response.title))}`,
+        `organization: ${asYaml(String(response.organization))}`,
+        `period: ${asYaml(String(response.period))}`,
         "bullets:",
         ...bullets.map((bullet) => `    - ${asYaml(bullet)}`),
         "---",
         "",
     ];
-    const filePath = nextFilePath("experience", response.organization);
+    const filePath = nextFilePath("experience", String(response.organization));
     await Bun.write(filePath, lines.join("\n"));
     console.log(`Criado: ${filePath}`);
 }
 
-async function main() {
-    const type = await chooseType();
+async function createContent(type: ContentType) {
+    if (type === "post") await createPost();
+    if (type === "update") await createUpdate();
+    if (type === "experience") await createExperience();
+}
 
-    if (!type) {
-        console.error("Escolha um tipo: post, update, quote, gallery ou experience.");
+function yamlScalar(value: string | undefined) {
+    const scalar = String(value ?? "").trim();
+    if (scalar.startsWith('"') && scalar.endsWith('"')) {
+        try {
+            return JSON.parse(scalar) as string;
+        } catch {
+            return scalar.slice(1, -1);
+        }
+    }
+    if (scalar.startsWith("'") && scalar.endsWith("'")) {
+        return scalar.slice(1, -1).replace(/''/g, "'");
+    }
+    return scalar;
+}
+
+function parsePost(filePath: string): ParsedPost {
+    const content = readFileSync(filePath, "utf8");
+    const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+    if (!match) {
+        throw new Error("frontmatter ausente ou invalido");
+    }
+    const frontmatter = match[1];
+    if (frontmatter === undefined) {
+        throw new Error("frontmatter ausente ou invalido");
+    }
+
+    const fields: PostFields = {};
+    for (const line of frontmatter.split(/\r?\n/)) {
+        const field = line.match(/^([A-Za-z][A-Za-z0-9_-]*):(?:\s*(.*))?$/);
+        const key = field?.[1];
+        if (key) {
+            fields[key] = field[2] ?? "";
+        }
+    }
+
+    return {
+        filePath,
+        id: basename(filePath, ".md"),
+        fields,
+        frontmatter,
+        body: content.slice(match[0].length),
+    };
+}
+
+function postFiles() {
+    return readdirSync(directories.post)
+        .filter((file) => file.endsWith(".md"))
+        .sort()
+        .map((file) => join(directories.post, file));
+}
+
+function findPost(reference: string) {
+    const normalized = reference.trim().replace(/\/+$/, "");
+    const fileName = basename(normalized);
+    const candidate = fileName.endsWith(".md") ? fileName : `${fileName}.md`;
+    const filePath = join(directories.post, candidate);
+    return existsSync(filePath) ? filePath : undefined;
+}
+
+function validDate(value: string | undefined) {
+    if (!value) return false;
+    return !Number.isNaN(new Date(yamlScalar(value)).valueOf());
+}
+
+function isDraft(post: ParsedPost) {
+    return yamlScalar(post.fields.draft) === "true";
+}
+
+function localImageIssues(post: ParsedPost): CheckIssue[] {
+    const issues: CheckIssue[] = [];
+    const imagePattern = /!\[[^\]]*\]\(([^)\s]+)(?:\s+[^)]*)?\)/g;
+    for (const match of post.body.matchAll(imagePattern)) {
+        const rawTarget = match[1];
+        if (!rawTarget) continue;
+        const target = rawTarget.replace(/^<|>$/g, "").split("#")[0];
+        if (!target || target.startsWith("/") || /^[a-z][a-z0-9+.-]*:/i.test(target)) {
+            continue;
+        }
+        const assetPath = resolve(dirname(post.filePath), target);
+        if (!existsSync(assetPath)) {
+            issues.push({
+                level: "error",
+                message: `imagem local nao encontrada: ${target}`,
+            });
+        }
+    }
+    return issues;
+}
+
+function postIssues(post: ParsedPost): CheckIssue[] {
+    const issues: CheckIssue[] = [];
+    const title = yamlScalar(post.fields.title);
+    const description = yamlScalar(post.fields.description);
+    const draft = yamlScalar(post.fields.draft);
+
+    if (!title) {
+        issues.push({ level: "error", message: "title ausente ou vazio" });
+    }
+    if (!validDate(post.fields.date)) {
+        issues.push({ level: "error", message: "date ausente ou invalida" });
+    }
+    if (!validDate(post.fields.publishDate)) {
+        issues.push({ level: "error", message: "publishDate ausente ou invalida" });
+    }
+    if (draft && draft !== "true" && draft !== "false") {
+        issues.push({ level: "error", message: "draft deve ser true ou false" });
+    }
+    if (!post.body.trim()) {
+        issues.push({
+            level: isDraft(post) ? "warning" : "error",
+            message: "corpo vazio",
+        });
+    }
+    if (!description) {
+        issues.push({
+            level: "warning",
+            message: post.fields.descricao !== undefined
+                ? "use 'description' em vez de 'descricao'"
+                : "description ausente, SEO e RSS ficarao incompletos",
+        });
+    }
+    if (post.fields.publishDate && validDate(post.fields.publishDate)) {
+        const publishDate = new Date(yamlScalar(post.fields.publishDate));
+        if (!isDraft(post) && publishDate > new Date()) {
+            issues.push({
+                level: "warning",
+                message: "publishDate esta no futuro; o site nao agenda publicacao automaticamente",
+            });
+        }
+    }
+
+    return [...issues, ...localImageIssues(post)];
+}
+
+function checkPosts(strict: boolean) {
+    const files = postFiles();
+    let errors = 0;
+    let warnings = 0;
+
+    for (const filePath of files) {
+        const id = basename(filePath, ".md");
+        let post: ParsedPost;
+        try {
+            post = parsePost(filePath);
+        } catch (error) {
+            console.error(`X ${id}: ${error instanceof Error ? error.message : String(error)}`);
+            errors += 1;
+            continue;
+        }
+
+        for (const issue of postIssues(post)) {
+            if (issue.level === "error" || strict) {
+                console.error(`X ${id}: ${issue.message}`);
+                errors += 1;
+            } else {
+                console.warn(`! ${id}: ${issue.message}`);
+                warnings += 1;
+            }
+        }
+    }
+
+    if (errors > 0) {
+        console.error(`Check falhou: ${errors} erro(s), ${warnings} aviso(s).`);
         process.exitCode = 1;
         return;
     }
 
-    if (type === "post") await createPost();
-    if (type === "update") await createUpdate();
-    if (type === "quote") await createQuote();
-    if (type === "gallery") await createGallery();
-    if (type === "experience") await createExperience();
+    const suffix = warnings > 0 ? `, ${warnings} aviso(s)` : "";
+    console.log(`Check OK: ${files.length} post(s) verificado(s)${suffix}.`);
 }
 
-main();
+function showStatus() {
+    const drafts: ParsedPost[] = [];
+    let published = 0;
+
+    for (const filePath of postFiles()) {
+        try {
+            const post = parsePost(filePath);
+            if (isDraft(post)) {
+                drafts.push(post);
+            } else {
+                published += 1;
+            }
+        } catch {
+            console.warn(`! ${basename(filePath)}: frontmatter invalido`);
+        }
+    }
+
+    drafts.sort((a, b) => {
+        const left = new Date(yamlScalar(a.fields.publishDate || a.fields.date)).valueOf();
+        const right = new Date(yamlScalar(b.fields.publishDate || b.fields.date)).valueOf();
+        return right - left;
+    });
+
+    console.log(`Posts: ${published} publicado(s), ${drafts.length} rascunho(s).`);
+    if (drafts.length === 0) return;
+
+    for (const draft of drafts) {
+        const title = yamlScalar(draft.fields.title) || "(sem titulo)";
+        const date = yamlScalar(draft.fields.publishDate || draft.fields.date) || "sem data";
+        console.log(`- ${date} | ${title} | ${draft.id}`);
+    }
+}
+
+function setFrontmatterField(frontmatter: string, key: string, value: string) {
+    const lines = frontmatter.split(/\r?\n/);
+    const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern = new RegExp(`^${escapedKey}:`);
+    const index = lines.findIndex((line) => pattern.test(line));
+
+    if (index >= 0) {
+        lines[index] = `${key}: ${value}`;
+        return lines.join("\n");
+    }
+
+    const dateIndex = lines.findIndex((line) => /^date:/.test(line));
+    lines.splice(dateIndex >= 0 ? dateIndex + 1 : lines.length, 0, `${key}: ${value}`);
+    return lines.join("\n");
+}
+
+async function publishPost(reference: string | undefined) {
+    if (!reference) {
+        throw new Error("Uso: bun run content -- publish <post>");
+    }
+
+    const filePath = findPost(reference);
+    if (!filePath) {
+        throw new Error(`Post nao encontrado: ${reference}`);
+    }
+
+    const post = parsePost(filePath);
+    const issues = postIssues(post);
+    const errors = issues.filter((issue) => issue.level === "error");
+    for (const issue of issues.filter((issue) => issue.level === "warning")) {
+        console.warn(`! ${post.id}: ${issue.message}`);
+    }
+    if (errors.length > 0) {
+        throw new Error(`Post invalido: ${errors.map((issue) => issue.message).join("; ")}`);
+    }
+    if (!isDraft(post)) {
+        console.log(`Post ja publicado: ${post.id}`);
+        return;
+    }
+
+    let frontmatter = setFrontmatterField(post.frontmatter, "draft", "false");
+    frontmatter = setFrontmatterField(frontmatter, "publishDate", today());
+    await Bun.write(filePath, `---\n${frontmatter}\n---\n${post.body}`);
+    console.log(`Publicado: ${filePath}`);
+}
+
+async function main() {
+    const args = [...cli.args].map(String);
+    const command = (args[0] ?? "").toLowerCase();
+
+    if (command === "status") {
+        showStatus();
+        return;
+    }
+    if (command === "check") {
+        checkPosts(options.strict === true);
+        return;
+    }
+    if (command === "publish") {
+        await publishPost(args[1]);
+        return;
+    }
+
+    if (command === "new" || command === "create") {
+        const type = await chooseType(args[1]);
+        if (!type) {
+            throw new Error("Escolha um tipo: post, update ou experience.");
+        }
+        await createContent(type);
+        return;
+    }
+
+    const directType = command ? aliases[command] : undefined;
+    if (command && !directType && !options.type) {
+        throw new Error(`Comando desconhecido: ${command}. Use --help para ver as opcoes.`);
+    }
+
+    const type = await chooseType(directType);
+    if (!type) {
+        throw new Error("Escolha um tipo: post, update ou experience.");
+    }
+    await createContent(type);
+}
+
+main().catch((error) => {
+    console.error(`Erro: ${error instanceof Error ? error.message : String(error)}`);
+    process.exitCode = 1;
+});

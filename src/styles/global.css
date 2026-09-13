@@ -11,24 +11,43 @@
 
 @layer base {
     :root {
-        --solarized-base03: #002b36;
-        --solarized-base02: #073642;
-        --solarized-base01: #586e75;
-        --solarized-base00: #657b83;
-        --solarized-base0: #839496;
-        --solarized-base1: #93a1a1;
-        --solarized-base2: #eee8d5;
-        --solarized-base3: #fdf6e3;
-        --solarized-yellow: #b58900;
-        --solarized-orange: #cb4b16;
-        --solarized-red: #dc322f;
-        --solarized-magenta: #d33682;
-        --solarized-violet: #6c71c4;
-        --solarized-blue: #268bd2;
-        --solarized-cyan: #2aa198;
-        --solarized-green: #859900;
+        color-scheme: light;
+        --sunbather-bg: #ffffff;
+        --sunbather-bg-muted: #eeeeee;
+        --sunbather-bg-subtle: #a8a8a8;
+        --sunbather-text: #262626;
+        --sunbather-text-subtle: #767676;
+        --sunbather-border: #eeeeee;
+        --sunbather-accent: #ff5f87;
+        --sunbather-accent-strong: #c30771;
+        --sunbather-link: #005f87;
+        --sunbather-cyan: #20a5ba;
+        --sunbather-green: #10a778;
+        --sunbather-yellow: #a89c14;
+        --sunbather-red: #c30771;
+        --sunbather-orange: #d75f5f;
         --font-mono: Monaco, "Lucida Console", monospace;
-        --nvim-divider-pattern: "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
+        --nvim-divider-pattern: "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            color-scheme: dark;
+            --sunbather-bg: #000000;
+            --sunbather-bg-muted: #121212;
+            --sunbather-bg-subtle: #4e4e4e;
+            --sunbather-text: #c6c6c6;
+            --sunbather-text-subtle: #767676;
+            --sunbather-border: #4e4e4e;
+            --sunbather-accent: #d75f87;
+            --sunbather-accent-strong: #e32791;
+            --sunbather-link: #20bbfc;
+            --sunbather-cyan: #4fb8cc;
+            --sunbather-green: #5fd7a7;
+            --sunbather-yellow: #ffff87;
+            --sunbather-red: #e32791;
+            --sunbather-orange: #d75f5f;
+        }
     }
 
     html {
@@ -36,15 +55,15 @@
     }
 
     body {
-        background-color: var(--solarized-base3);
-        color: var(--solarized-base00);
+        background-color: var(--sunbather-bg);
+        color: var(--sunbather-text);
         font-family: "Times New Roman", Times, serif;
         @apply min-h-screen;
     }
 
     ::selection {
-        background-color: color-mix(in srgb, var(--solarized-magenta) 22%, transparent);
-        color: var(--solarized-base03);
+        background-color: color-mix(in srgb, var(--sunbather-accent) 22%, transparent);
+        color: var(--sunbather-bg);
     }
 
     h1,
@@ -53,7 +72,7 @@
     h4,
     h5,
     h6 {
-        color: var(--solarized-base01);
+        color: var(--sunbather-text-subtle);
     }
 
     h1 {
@@ -69,7 +88,7 @@
     }
 
     a {
-        color: var(--solarized-blue);
+        color: var(--sunbather-link);
     }
 
     a:hover {
@@ -77,14 +96,14 @@
     }
 
     .nav-link--active {
-        color: var(--solarized-base01);
+        color: var(--sunbather-accent);
         text-decoration: underline;
         text-underline-offset: 0.15em;
     }
 
     hr {
         border: 0;
-        color: var(--solarized-base1);
+        color: var(--sunbather-text-subtle);
         font-family: var(--font-mono);
         font-size: 1.125rem;
         height: 1.125rem;
@@ -101,7 +120,7 @@
 
     code,
     pre {
-        color: var(--solarized-base01);
+        color: var(--sunbather-text);
         font-family: var(--font-mono);
     }
 
@@ -115,7 +134,7 @@
 
 @layer components {
     .surface-divider {
-        border-color: var(--solarized-base2);
+        border-color: var(--sunbather-border);
     }
 
     .nvim-divider {
@@ -129,7 +148,7 @@
     .nvim-divider::before,
     .nvim-divider::after,
     .nvim-divider > :not([hidden]) ~ :not([hidden])::before {
-        color: var(--solarized-base1);
+        color: var(--sunbather-text-subtle);
         content: var(--nvim-divider-pattern);
         font-family: var(--font-mono);
         font-size: 1.125rem;
@@ -155,7 +174,7 @@
     }
 
     .muted {
-        color: var(--solarized-base1);
+        color: var(--sunbather-text-subtle);
     }
 
     .post-signoff {
@@ -173,21 +192,21 @@
     }
 
     .meta-line {
-        color: var(--solarized-base1);
+        color: var(--sunbather-text-subtle);
         @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-sm;
     }
 
     .meta-dot {
-        color: var(--solarized-base0);
+        color: var(--sunbather-bg-subtle);
     }
 
     .post-title-link {
-        color: var(--solarized-base01);
+        color: var(--sunbather-text);
         @apply text-lg;
     }
 
     .draft-note {
-        color: var(--solarized-orange);
+        color: var(--sunbather-orange);
         font-family: var(--font-mono);
         font-size: 0.75rem;
     }
@@ -198,7 +217,7 @@
     .tag-link-3,
     .tag-link-4,
     .tag-link-5 {
-        color: var(--solarized-blue);
+        color: var(--sunbather-link);
     }
 
     .post-content > * + * {
@@ -239,15 +258,15 @@
     }
 
     .post-content blockquote {
-        background-color: color-mix(in srgb, var(--solarized-base2) 70%, var(--solarized-base3));
-        border-left: 4px solid color-mix(in srgb, var(--solarized-base01) 22%, var(--solarized-base2));
-        color: var(--solarized-base01);
+        background-color: color-mix(in srgb, var(--sunbather-bg-muted) 70%, var(--sunbather-bg));
+        border-left: 4px solid color-mix(in srgb, var(--sunbather-accent) 28%, var(--sunbather-border));
+        color: var(--sunbather-text);
         @apply rounded-r px-4 py-3 italic;
     }
 
     .post-content pre,
     .post-content :not(pre) > code {
-        background-color: var(--solarized-base2);
+        background-color: var(--sunbather-bg-muted);
     }
 
     .post-content :not(pre) > code {
@@ -263,8 +282,8 @@
     }
 
     .post-content img {
-        border: 1.5px solid var(--solarized-base2);
-        box-shadow: 0.1rem 0.1rem 0.2rem color-mix(in srgb, var(--solarized-base01) 22%, transparent);
+        border: 1.5px solid var(--sunbather-border);
+        box-shadow: 0.1rem 0.1rem 0.2rem color-mix(in srgb, var(--sunbather-text) 22%, transparent);
     }
 
     .post-content figure img {
@@ -273,7 +292,7 @@
     }
 
     .post-content figcaption {
-        color: var(--solarized-base1);
+        color: var(--sunbather-text-subtle);
         @apply mt-2 text-center text-sm;
     }
 
@@ -285,7 +304,7 @@
 
     .post-content th,
     .post-content td {
-        border: 1px solid var(--solarized-base2);
+        border: 1px solid var(--sunbather-border);
         @apply px-3 py-2 text-left;
     }
 }

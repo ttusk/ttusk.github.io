@@ -4,7 +4,7 @@ title: início
 description: esse é o meu pedacinho de história na internet.
 ---
 
-![cowboy-bebop-arrival.gif](../assets/img/cowboy-bebop-arrival.gif)
+![fmabh.gif](../assets/img/fmabh.gif)
 
 **seja bem vindo(a)!**
 

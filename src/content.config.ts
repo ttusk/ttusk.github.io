@@ -24,34 +24,6 @@ const updates = defineCollection({
   }),
 });
 
-const quotes = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/quotes" }),
-  schema: z.object({
-    quote: z.string(),
-    author: z.string(),
-    source: z.string().optional(),
-    internal: z.boolean().default(false),
-  }),
-});
-const gallery = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/gallery" }),
-  schema: ({ image }) => z.discriminatedUnion("kind", [
-    z.object({
-      kind: z.literal("image"),
-      title: z.string(),
-      description: z.string(),
-      alt: z.string(),
-      image: image(),
-    }),
-    z.object({
-      kind: z.literal("video"),
-      title: z.string(),
-      description: z.string(),
-      thumbnailUrl: z.string().url(),
-      sourceUrl: z.string().url(),
-    }),
-  ]),
-});
 const experiences = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/experiences" }),
   schema: z.object({
@@ -62,4 +34,4 @@ const experiences = defineCollection({
   }),
 });
 
-export const collections = { posts, updates, quotes, gallery, experiences };
+export const collections = { posts, updates, experiences };

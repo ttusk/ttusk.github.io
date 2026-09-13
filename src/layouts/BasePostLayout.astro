@@ -50,7 +50,7 @@ const articleSchema = {
     publishedTime={publishedTime}
     keywords={tags}
 >
-    <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
     <article class="w-full">
         <header class="mb-8">
             <h1>{title}</h1>

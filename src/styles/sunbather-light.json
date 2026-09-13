@@ -1,0 +1,63 @@
+{
+  "name": "sunbather-light",
+  "type": "light",
+  "colors": {
+    "editor.background": "#FFFFFF",
+    "editor.foreground": "#262626",
+    "editorCursor.foreground": "#FF5F87",
+    "editor.selectionBackground": "#FF5F87",
+    "editorLineNumber.foreground": "#A8A8A8",
+    "editorLineNumber.activeForeground": "#FF5F87",
+    "editorIndentGuide.background": "#EEEEEE",
+    "editorIndentGuide.activeBackground": "#A8A8A8",
+    "editorWhitespace.foreground": "#A8A8A8",
+    "editorBracketMatch.background": "#EEEEEE",
+    "editorBracketMatch.border": "#FF5F87"
+  },
+  "tokenColors": [
+    {
+      "scope": ["comment", "punctuation.definition.comment"],
+      "settings": { "foreground": "#A8A8A8", "fontStyle": "italic" }
+    },
+    {
+      "scope": ["string", "constant.numeric", "constant.language", "constant.character"],
+      "settings": { "foreground": "#FF5F87" }
+    },
+    {
+      "scope": ["keyword", "storage", "storage.type", "storage.modifier"],
+      "settings": { "foreground": "#767676" }
+    },
+    {
+      "scope": ["entity.name.function", "support.function", "meta.function-call"],
+      "settings": { "foreground": "#262626" }
+    },
+    {
+      "scope": ["entity.name.type", "support.type", "entity.name.class"],
+      "settings": { "foreground": "#262626" }
+    },
+    {
+      "scope": ["variable", "variable.parameter", "meta.object-literal.key"],
+      "settings": { "foreground": "#262626" }
+    },
+    {
+      "scope": ["entity.name.tag", "entity.other.attribute-name"],
+      "settings": { "foreground": "#767676" }
+    },
+    {
+      "scope": ["punctuation", "delimiter"],
+      "settings": { "foreground": "#767676" }
+    },
+    {
+      "scope": ["markup.heading", "markup.bold"],
+      "settings": { "foreground": "#C30771", "fontStyle": "bold" }
+    },
+    {
+      "scope": ["markup.italic"],
+      "settings": { "foreground": "#C30771", "fontStyle": "italic" }
+    },
+    {
+      "scope": ["invalid", "invalid.illegal"],
+      "settings": { "foreground": "#FFFFFF", "background": "#C30771" }
+    }
+  ]
+}

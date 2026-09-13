@@ -1,6 +1,10 @@
 import { getCollection } from "astro:content";
 
 const site = "https://talkinghead.blog.br";
+type SitemapUrl = {
+    url: string;
+    lastmod?: string;
+};
 
 export async function GET() {
     const posts = await getCollection("posts", ({ data }) => {
@@ -11,13 +15,10 @@ export async function GET() {
         posts.flatMap((post) => post.data.tags || []),
     );
 
-    const staticPages = [
+    const staticPages: SitemapUrl[] = [
         {
             url: `${site}/`,
             lastmod: new Date().toISOString(),
-        },
-        {
-            url: `${site}/gallery/`,
         },
         {
             url: `${site}/rss.xml`,
@@ -33,7 +34,7 @@ export async function GET() {
         url: `${site}/tags/${tag}/`,
     }));
 
-    const urls = [...staticPages, ...postPages, ...tagPages];
+    const urls: SitemapUrl[] = [...staticPages, ...postPages, ...tagPages];
 
     const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
