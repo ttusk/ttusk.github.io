@@ -9,3 +9,5 @@ description: esse é o meu pedacinho de história na internet.
 **seja bem vindo(a)!**
 
 esse é o meu pedaço de história na internet. aqui eu compartilho novidades da minha vida e escrevo sobre tudo o que me encanta.
+
+*o colorscheme deste blog é creditado ao criador: [vim-sunbather](https://github.com/nikolvs/vim-sunbather)*.
